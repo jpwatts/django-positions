@@ -153,113 +153,90 @@ class PositionField(models.IntegerField):
                                                      self.unique_for_field)
         return instance.__class__._default_manager.filter(**filters)
 
-# TODO: refactor _on_delete and _on_save to remove the blatant copy-paste job
-
     def _on_delete(self, sender, instance):
         current, updated = self._get_instance_cache(instance)
         
         logging.debug('_on_delete: current=%s; updated=%s' % (current, updated))
 
-        params = {
-            'position_field': qn(self.column),
-            'table': qn(instance._meta.db_table),
-        }
-
-        query = """
-        UPDATE %(table)s
-        SET %(position_field)s = (%(position_field)s - 1)"""
-
-        wheres = []
-
-        if self.unique_for_field:
-            unique_for_field = instance._meta.get_field(self.unique_for_field)
-            params.update({
-                'unique_for_field': qn(unique_for_field.column),
-                'unique_for_field_pk': getattr(instance,
-                                               unique_for_field.attname)
-            })
-            wheres.append('%(unique_for_field)s = %(unique_for_field_pk)s')
-
         # decrement positions gt current
-        gt_or_lt_position = '%%(position_field)s %(gt_or_lt)s %(position)s'
-        wheres.append(gt_or_lt_position % {
-            'gt_or_lt': '>',
-            'position': current,
-        })
+        operations = [self._get_operation_sql('-')]
+        conditions = [self._get_condition_sql('>', current)]
 
-        query += ' WHERE %s' % ' AND '.join(wheres)
         cursor = connection.cursor()
-        cursor.execute(query % params)
-        self._reset_instance_cache(instance, updated)
+        cursor.execute(self._get_update_sql(instance, operations, conditions))
+        self._reset_instance_cache(instance, None)
 
     def _on_save(self, sender, instance):
         current, updated = self._get_instance_cache(instance)
-
+        
         logging.debug('_on_save: current=%s; updated=%s' % (current, updated))
 
         # no cleanup required
         if updated is None:
             return None
 
-        params = {
-            'pk_field': qn(instance._meta.pk.column),
+        if current is None:
+            # increment positions gte updated
+            operations = [self._get_operation_sql('+')]
+            conditions = [self._get_condition_sql('>=', updated)]
+        elif updated > current:
+            # decrement positions gt current and lte updated
+            operations = [self._get_operation_sql('-')]
+            conditions = [
+                self._get_condition_sql('>', current),
+                self._get_condition_sql('<=', updated)
+            ]
+        else:
+            # increment positions lt current and gte updated
+            operations = [self._get_operation_sql('+')]
+            conditions = [
+                self._get_condition_sql('<', current),
+                self._get_condition_sql('>=', updated)
+            ]
+
+        # exclude instance from the update
+        conditions.append('%(pk_field)s != %(pk)s' % {
             'pk': getattr(instance, instance._meta.pk.attname),
+            'pk_field': qn(instance._meta.pk.column)
+        })
+
+        cursor = connection.cursor()
+        cursor.execute(self._get_update_sql(instance, operations, conditions))
+        self._reset_instance_cache(instance, updated)
+
+    def _get_update_sql(self, instance, operations=None, conditions=None):
+        operations = operations or []
+        conditions = conditions or []
+
+        # TODO: add params and operations to update auto_now date(time)s
+
+        params = {
             'position_field': qn(self.column),
             'table': qn(instance._meta.db_table),
         }
-
-        # TODO: correctly handle auto_now date(time) fields
-
-        query = """
-        UPDATE %(table)s
-        SET %(position_field)s = (%(position_field)s %(plus_or_minus)s 1)"""
-
-        wheres = []
-
         if self.unique_for_field:
             unique_for_field = instance._meta.get_field(self.unique_for_field)
-            params.update({
-                'unique_for_field': qn(unique_for_field.column),
-                'unique_for_field_pk': getattr(instance,
-                                               unique_for_field.attname)
-            })
-            wheres.append('%(unique_for_field)s = %(unique_for_field_pk)s')
+            params['unique_for_field'] = qn(unique_for_field.column)
+            params['unique_for_field_pk'] = getattr(instance,
+                                                    unique_for_field.attname)
+            # this field is likely to be indexed; put it first
+            conditions.insert(0,
+                              '%(unique_for_field)s = %(unique_for_field_pk)s')
 
-        gt_or_lt_position = '%%(position_field)s %(gt_or_lt)s %(position)s'
+        query = 'UPDATE %(table)s'
+        query += ' SET %s' % ', '.join(operations)
+        query += ' WHERE %s' % ' AND '.join(conditions)
 
-        if current is None:
-            # increment positions gte updated; excluding instance
-            params['plus_or_minus'] = '+'
-            wheres.append(gt_or_lt_position % {
-                'gt_or_lt': '>=',
-                'position': updated,
-            })
-        elif updated > current:
-            # decrement positions gt current and lte updated; excluding instance
-            params['plus_or_minus'] = '-'
-            wheres.append(gt_or_lt_position % {
-                'gt_or_lt': '>',
-                'position': current,
-            })
-            wheres.append(gt_or_lt_position % {
-                'gt_or_lt': '<=',
-                'position': updated,
-            })
-        else:
-            # increment positions lt current and gte updated; excluding instance
-            params['plus_or_minus'] = '+'
-            wheres.append(gt_or_lt_position % {
-                'gt_or_lt': '>=',
-                'position': updated,
-            })
-            wheres.append(gt_or_lt_position % {
-                'gt_or_lt': '<',
-                'position': current,
-            })
+        return query % params
 
-        wheres.append('%(pk_field)s != %(pk)s')
+    def _get_condition_sql(self, gt_or_lt, position):
+        return '%%(position_field)s %(gt_or_lt)s %(position)s' % {
+            'gt_or_lt': gt_or_lt,
+            'position': position
+        }
 
-        query += ' WHERE %s' % ' AND '.join(wheres)
-        cursor = connection.cursor()
-        cursor.execute(query % params)
-        self._reset_instance_cache(instance, updated)
+    def _get_operation_sql(self, plus_or_minus):
+        return """
+        %%(position_field)s = (%%(position_field)s %(plus_or_minus)s 1)""" % {
+            'plus_or_minus': plus_or_minus
+        }
