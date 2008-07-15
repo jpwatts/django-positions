@@ -1,5 +1,3 @@
-import logging
-
 from django.db import connection, models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import dispatcher
@@ -9,8 +7,30 @@ qn = connection.ops.quote_name
 
 
 class PositionField(models.IntegerField):
+    """A model field to manage the position of an item within a collection.
+
+    By default all instances of a model are treated as one collection; if the
+    ``unique_for_field`` argument is used, each value of the specified field is
+    treated as a distinct collection.
+
+    ``PositionField`` values work like list indices, including the handling of
+    negative values.  A value of ``-2`` will be cause the position to be set to
+    the second to last position in the collection.  The implementation differs
+    from standard list indices in that values that are too large or too small
+    are converted to the maximum or minimum allowed value respectively.
+
+    When the value of a ``PositionField`` in a model instance is modified, the
+    positions of other instances in the same collection are automatically
+    updated to reflect the change.
+
+    Assigning a value of ``None`` to a ``PositionField`` will cause the instance
+    to be moved to the end of the collection (or appended to the collection, in
+    the case of a new instance).
+
+    """
     def __init__(self, verbose_name=None, name=None, unique_for_field=None,
                  *args, **kwargs):
+        # blank values are used to move an instance to the last position
         kwargs.setdefault('blank', True)
 
         # unique constraints break the ability to execute a single query to
@@ -43,8 +63,6 @@ class PositionField(models.IntegerField):
     def pre_save(self, model_instance, add):
         current, updated = self._get_instance_cache(model_instance)
 
-        logging.debug('pre_save: current=%s; updated=%s' % (current, updated))
-
         # existing instance, position not modified; no cleanup required
         if current is not None and updated is None:
             self._reset_instance_cache(model_instance, current)
@@ -56,11 +74,6 @@ class PositionField(models.IntegerField):
         else:
             max_position = count - 1
         min_position = 0
-
-        logging.debug(
-            'pre_save: max_position=%s; min_position=%s' % (max_position,
-                                                            min_position)
-        )
 
         # new instance; appended; no cleanup required
         if current is None and (updated == -1 or updated >= max_position):
@@ -75,12 +88,14 @@ class PositionField(models.IntegerField):
             position = max_position
         elif abs(updated) <= (max_position + 1):
             # negative position; valid index
+
+            # add 1 to max_position to make this behave like a negative list
+            # index.  -1 means the last position, not the last position minus 1
+
             position = max_position + 1 + updated
         else:
             # negative position; invalid index
             position = min_position
-
-        logging.debug('pre_save: position=%s' % position)
 
         # instance inserted; cleanup required on post_save
         self._set_instance_cache(model_instance, position)
@@ -147,6 +162,9 @@ class PositionField(models.IntegerField):
         setattr(instance, self.get_cache_name(), (current, updated))
 
     def _get_instance_peers(self, instance):
+        # return a queryset containing all instances of the model that belong
+        # to the same collection as instance; either all instances of a model
+        # or all instances with the same value in unique_for_field
         filters = {}
         if self.unique_for_field:
             filters[self.unique_for_field] = getattr(instance,
@@ -156,8 +174,6 @@ class PositionField(models.IntegerField):
     def _on_delete(self, sender, instance):
         current, updated = self._get_instance_cache(instance)
         
-        logging.debug('_on_delete: current=%s; updated=%s' % (current, updated))
-
         # decrement positions gt current
         operations = [self._get_operation_sql('-')]
         conditions = [self._get_condition_sql('>', current)]
@@ -169,8 +185,6 @@ class PositionField(models.IntegerField):
     def _on_save(self, sender, instance):
         current, updated = self._get_instance_cache(instance)
         
-        logging.debug('_on_save: current=%s; updated=%s' % (current, updated))
-
         # no cleanup required
         if updated is None:
             return None
