@@ -39,8 +39,9 @@ class PositionField(models.IntegerField):
         # additional queries
         unique = kwargs.get('unique', False)
         if unique:
-            raise TypeError('%s cannot have a unique constraint' % self.name)
-
+            raise TypeError(
+                '%s cannot have a unique constraint' % self.__class__.__name__
+            )
         # TODO: raise exception if position field appears in unique_together
 
         super(PositionField, self).__init__(verbose_name, name, *args, **kwargs)
