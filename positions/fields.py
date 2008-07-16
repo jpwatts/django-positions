@@ -168,8 +168,12 @@ class PositionField(models.IntegerField):
         # or all instances with the same value in unique_for_field
         filters = {}
         if self.unique_for_field:
-            filters[self.unique_for_field] = getattr(instance,
-                                                     self.unique_for_field)
+            unique_for_field = instance._meta.get_field(self.unique_for_field)
+            unique_for_value = getattr(instance, unique_for_field.attname)
+            if unique_for_field.null and unique_for_value is None:
+                filters['%s__isnull' % unique_for_field.name] = True
+            else:
+                filters[unique_for_field.name] = unique_for_value
         return instance.__class__._default_manager.filter(**filters)
 
     def _on_delete(self, sender, instance):
@@ -185,7 +189,7 @@ class PositionField(models.IntegerField):
 
     def _on_save(self, sender, instance):
         current, updated = self._get_instance_cache(instance)
-        
+
         # no cleanup required
         if updated is None:
             return None
@@ -231,12 +235,17 @@ class PositionField(models.IntegerField):
         }
         if self.unique_for_field:
             unique_for_field = instance._meta.get_field(self.unique_for_field)
+            unique_for_value = getattr(instance, unique_for_field.attname)
+
             params['unique_for_field'] = qn(unique_for_field.column)
-            params['unique_for_field_pk'] = getattr(instance,
-                                                    unique_for_field.attname)
+
             # this field is likely to be indexed; put it first
-            conditions.insert(0,
-                              '%(unique_for_field)s = %(unique_for_field_pk)s')
+            if unique_for_field.null and unique_for_value is None:
+                conditions.insert(0, '%(unique_for_field)s IS NULL')
+            else:
+                params['unique_for_value'] = unique_for_value
+                conditions.insert(0,
+                                  '%(unique_for_field)s = %(unique_for_value)s')
 
         query = 'UPDATE %(table)s'
         query += ' SET %s' % ', '.join(operations)
