@@ -1,4 +1,4 @@
-from positions.example.models import List
+from positions.examples.lists.models import List
 
 
 tests = """
