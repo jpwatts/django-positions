@@ -1,6 +1,5 @@
 from django.db import connection, models
 from django.db.models.signals import post_delete, post_save
-from django.dispatch import dispatcher
 
 
 qn = connection.ops.quote_name
@@ -54,8 +53,8 @@ class PositionField(models.IntegerField):
         setattr(cls, self.name, self)
 
         # adjust related positions in response to a delete or save
-        dispatcher.connect(self._on_delete, sender=cls, signal=post_delete)
-        dispatcher.connect(self._on_save, sender=cls, signal=post_save)
+        post_delete.connect(self._on_delete, sender=cls)
+        post_save.connect(self._on_save, sender=cls)
 
     def get_internal_type(self):
         # all values will be positive after pre_save
@@ -176,7 +175,7 @@ class PositionField(models.IntegerField):
                 filters[unique_for_field.name] = unique_for_value
         return instance.__class__._default_manager.filter(**filters)
 
-    def _on_delete(self, sender, instance):
+    def _on_delete(self, sender, instance, **kwargs):
         current, updated = self._get_instance_cache(instance)
         
         # decrement positions gt current
@@ -187,7 +186,7 @@ class PositionField(models.IntegerField):
         cursor.execute(self._get_update_sql(instance, operations, conditions))
         self._reset_instance_cache(instance, None)
 
-    def _on_save(self, sender, instance):
+    def _on_save(self, sender, instance, **kwargs):
         current, updated = self._get_instance_cache(instance)
 
         # no cleanup required
