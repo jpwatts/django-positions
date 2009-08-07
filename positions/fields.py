@@ -1,4 +1,4 @@
-from django.db import connection, models
+from django.db import connection, models, transaction
 from django.db.models.signals import post_delete, post_save
 
 
@@ -184,6 +184,7 @@ class PositionField(models.IntegerField):
 
         cursor = connection.cursor()
         cursor.execute(self._get_update_sql(instance, operations, conditions))
+        transaction.commit_unless_managed()
         self._reset_instance_cache(instance, None)
 
     def _on_save(self, sender, instance, **kwargs):
@@ -220,6 +221,7 @@ class PositionField(models.IntegerField):
 
         cursor = connection.cursor()
         cursor.execute(self._get_update_sql(instance, operations, conditions))
+        transaction.commit_unless_managed()
         self._reset_instance_cache(instance, updated)
 
     def _get_update_sql(self, instance, operations=None, conditions=None):
