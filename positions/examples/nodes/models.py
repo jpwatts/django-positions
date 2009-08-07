@@ -11,5 +11,3 @@ class Node(models.Model):
 
     def __unicode__(self):
        return self.name
-
-    save = transaction.commit_on_success(models.Model.save)
