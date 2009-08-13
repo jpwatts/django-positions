@@ -139,7 +139,10 @@ class PositionField(models.IntegerField):
         # instantiated keeps this method from doing the right thing.
         # Fortunately it works on newforms-admin, so it will be moot soon.
 
-        has_pk = bool(getattr(instance, instance._meta.pk.attname))
+        try:
+            has_pk = bool(getattr(instance, instance._meta.pk.attname))
+        except AttributeError:
+            has_pk = False
 
         # default to None for existing instances; -1 for new instances
         updated = None if has_pk else -1
