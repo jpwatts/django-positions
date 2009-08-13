@@ -134,11 +134,6 @@ class PositionField(models.IntegerField):
         # initialized to None when models.Manager.create is called with an
         # explicit position.
 
-        # FIXME: This breaks pre-newforms-admin when setting a position gt the
-        # maximum possible position -- something about how models are
-        # instantiated keeps this method from doing the right thing.
-        # Fortunately it works on newforms-admin, so it will be moot soon.
-
         try:
             has_pk = bool(getattr(instance, instance._meta.pk.attname))
         except AttributeError:
