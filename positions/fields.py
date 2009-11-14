@@ -27,11 +27,10 @@ class PositionField(models.IntegerField):
     the case of a new instance).
 
     """
-    def __init__(self, verbose_name=None, name=None, unique_for_field=None,
+    def __init__(self, verbose_name=None, name=None, unique_for_fields=(),
                  *args, **kwargs):
         # blank values are used to move an instance to the last position
         kwargs.setdefault('blank', True)
-
         # unique constraints break the ability to execute a single query to
         # increment or decrement a set of positions; they also require the use
         # of temporary placeholder positions which result in undesirable
@@ -44,8 +43,8 @@ class PositionField(models.IntegerField):
         # TODO: raise exception if position field appears in unique_together
 
         super(PositionField, self).__init__(verbose_name, name, *args, **kwargs)
-        self.unique_for_field = unique_for_field
-
+        self.unique_for_fields=unique_for_fields or ()
+        
     def contribute_to_class(self, cls, name):
         super(PositionField, self).contribute_to_class(cls, name)
 
@@ -164,8 +163,8 @@ class PositionField(models.IntegerField):
         # to the same collection as instance; either all instances of a model
         # or all instances with the same value in unique_for_field
         filters = {}
-        if self.unique_for_field:
-            unique_for_field = instance._meta.get_field(self.unique_for_field)
+        for fld in self.unique_for_fields:
+            unique_for_field = instance._meta.get_field(fld)
             unique_for_value = getattr(instance, unique_for_field.attname)
             if unique_for_field.null and unique_for_value is None:
                 filters['%s__isnull' % unique_for_field.name] = True
@@ -232,19 +231,20 @@ class PositionField(models.IntegerField):
             'position_field': qn(self.column),
             'table': qn(instance._meta.db_table),
         }
-        if self.unique_for_field:
-            unique_for_field = instance._meta.get_field(self.unique_for_field)
+        for idx, fld in enumerate(self.unique_for_fields):
+            unique_for_field = instance._meta.get_field(fld)
             unique_for_value = getattr(instance, unique_for_field.attname)
-
-            params['unique_for_field'] = qn(unique_for_field.column)
+            key='uff%d' % idx
+            val='ufv%d' % idx
+            params[key] = qn(unique_for_field.column)
 
             # this field is likely to be indexed; put it first
             if unique_for_field.null and unique_for_value is None:
-                conditions.insert(0, '%(unique_for_field)s IS NULL')
+                conditions.insert(0, '%%(%s)s IS NULL' % key)
             else:
-                params['unique_for_value'] = unique_for_value
+                params[val] = unique_for_value
                 conditions.insert(0,
-                                  '%(unique_for_field)s = %(unique_for_value)s')
+                                  '%%(%s)s = %%(%s)s' % (key, val))
 
         query = 'UPDATE %(table)s'
         query += ' SET %s' % ', '.join(operations)

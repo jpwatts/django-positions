@@ -1,7 +1,7 @@
 from positions.examples.lists.models import List
 
 
-tests = """
+tests= """
 >>> l = List.objects.create(name='To Do')
 
 
@@ -96,7 +96,7 @@ tests = """
 
 >>> l.items.values_list('name', 'position').order_by('position')
 [(u'Go to Bed', 0), (u'Exercise', 1), (u'Drink less Coke', 2), (u'Write Tests', 3)]
-
 """
+
 
 __test__ = {'tests': tests}

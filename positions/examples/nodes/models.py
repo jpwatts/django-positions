@@ -7,7 +7,7 @@ class Node(models.Model):
     parent = models.ForeignKey('self', related_name='children', blank=True,
                                null=True)
     name = models.CharField(max_length=50)
-    position = PositionField(unique_for_field='parent')
+    position = PositionField(unique_for_fields=('parent',))
 
     def __unicode__(self):
        return self.name
