@@ -14,16 +14,12 @@ Usage
 Add a ``PositionField`` to your model; that's just about it.
 
 If you want to work with all instances of the model as a single collection,
-there's nothing else required.  In order to create collections based on another
-field in the model (a ``ForeignKey``, for example), set ``unique_for_field`` to
-the name of the field.
+there's nothing else required.  To create collections based on one or more
+fields on the model, set ``unique_for_fields`` to a list containing the names
+of the fields.
 
-It's probably also a good idea to wrap the ``save`` method of your model in a
-transaction since it will trigger another query to reorder the other members of
-the collection.
+The apps in ``positions.examples`` demonstrate the ``PositionField`` API.
 
-Look at ``positions.example.models`` for an example of how to add
-``PositionField`` to a model and at ``positions.example.tests`` for API usage.
 
 Indices
 ~~~~~~~
