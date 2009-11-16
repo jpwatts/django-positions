@@ -27,7 +27,7 @@ class PositionField(models.IntegerField):
     the case of a new instance).
 
     """
-    def __init__(self, verbose_name=None, name=None, unique_for_fields=(),
+    def __init__(self, verbose_name=None, name=None, unique_for_field=None, unique_for_fields=None,
                  *args, **kwargs):
         # blank values are used to move an instance to the last position
         kwargs.setdefault('blank', True)
@@ -43,7 +43,16 @@ class PositionField(models.IntegerField):
         # TODO: raise exception if position field appears in unique_together
 
         super(PositionField, self).__init__(verbose_name, name, *args, **kwargs)
-        self.unique_for_fields=unique_for_fields or ()
+
+        if unique_for_field is not None:
+            import warnings
+            warnings.warn("The 'unique_for_field' argument is deprecated.  Please use 'unique_for_fields' instead.", DeprecationWarning)
+
+            if unique_for_fields is not None:
+                raise TypeError("'unique_for_field' and 'unique_for_fields' are incompatible arguments.")
+            unique_for_fields = (unique_for_field,)
+
+        self.unique_for_fields = unique_for_fields or ()
         
     def contribute_to_class(self, cls, name):
         super(PositionField, self).contribute_to_class(cls, name)
