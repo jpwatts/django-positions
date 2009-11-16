@@ -15,8 +15,7 @@ Add a ``PositionField`` to your model; that's just about it.
 
 If you want to work with all instances of the model as a single collection,
 there's nothing else required.  To create collections based on one or more
-fields on the model, set ``unique_for_fields`` to a list containing the names
-of the fields.
+fields on the model, specify the field names using the ``collection`` argument.
 
 The apps in ``positions.examples`` demonstrate the ``PositionField`` API.
 
@@ -47,6 +46,7 @@ Limitations
 
 * After a position has been updated, other members of the collection are updated
   using a single SQL ``UPDATE`` statement, this means the ``save`` method of the
-  other instances won't be called.
+  other instances won't be called.  As a partial work-around to this issue,
+  any ``DateTimeField`` with ``auto_now=True`` will be assigned the current time.
 
 .. _`Django`: http://www.djangoproject.com/

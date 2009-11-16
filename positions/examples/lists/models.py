@@ -13,9 +13,8 @@ class List(models.Model):
 class Item(models.Model):
     list = models.ForeignKey('list', related_name='items', db_index=True)
     name = models.CharField(max_length=50)
-
-    # Intentionally use the deprecated `unique_for_field` argument.
-    position = PositionField(unique_for_field='list')
+    position = PositionField(collection='list')
+    updated = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name

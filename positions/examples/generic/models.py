@@ -9,7 +9,7 @@ class GenericThing(models.Model):
     object_id=models.PositiveIntegerField()
     content_type=models.ForeignKey(ContentType)
     content_object=generic.GenericForeignKey()
-    position=PositionField(unique_for_fields=('object_id', 'content_type'))
+    position=PositionField(collection=('object_id', 'content_type'))
 
     def __unicode__(self):
         return self.name

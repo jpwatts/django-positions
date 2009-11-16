@@ -96,6 +96,28 @@ tests= """
 
 >>> l.items.values_list('name', 'position').order_by('position')
 [(u'Go to Bed', 0), (u'Exercise', 1), (u'Drink less Coke', 2), (u'Write Tests', 3)]
+
+
+# check auto_now updates
+
+>>> sleep_updated, excersize_updated, eat_better_updated, write_tests_updated = [i.updated for i in l.items.order_by('position')]
+>>> eat_better = l.items.order_by('-position')[1]
+>>> eat_better.position = 1
+>>> eat_better.save()
+>>> todo_list = list(l.items.order_by('position'))
+
+>>> sleep_updated == todo_list[0].updated
+True
+
+>>> eat_better_updated < todo_list[1].updated
+True
+
+>>> excersize_updated < todo_list[2].updated
+True
+
+>>> write_tests_updated == excersize_updated
+True
+
 """
 
 
