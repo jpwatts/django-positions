@@ -6,7 +6,7 @@ setup(
     description='A Django field for custom model ordering.',
     author='Joel Watts',
     author_email='joel@joelwatts.com',
-    url='http://code.google.com/p/django-positions/',
+    url='http://github.com/jpwatts/django-positions',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',
