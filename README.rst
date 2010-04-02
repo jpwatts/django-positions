@@ -34,6 +34,19 @@ as being the same as the maximum or minimum position, respectively.  ``None`` is
 also a special case that will cause an item to be moved to the last position in
 its collection.
 
+Bulk updates
+~~~~~~~~~~~~
+
+The `PositionManager` custom manager uses `PositionQuerySet` to provide a
+`reposition` method that will update the position of all objects in the
+queryset to match the current ordering.  If `reposition` is called on the
+manager itself, all objects will be repositioned according to the default
+model ordering.
+
+Be aware that, unlike repositioning objects one at a time using list indices,
+the `reposition` method will call the `save` method of every model instance
+in the queryset.
+
 
 Limitations
 -----------
