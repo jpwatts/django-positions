@@ -1,7 +1,7 @@
 from positions.examples.lists.models import List
 
 
-tests= """
+tests = """
 >>> l = List.objects.create(name='To Do')
 
 
