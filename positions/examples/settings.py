@@ -6,4 +6,5 @@ INSTALLED_APPS = (
     'positions.examples.nodes',
     'positions.examples.generic',
     'positions.examples.todo',
+    'positions.examples.store',
 )

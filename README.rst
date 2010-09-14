@@ -47,6 +47,27 @@ Be aware that, unlike repositioning objects one at a time using list indices,
 the `reposition` method will call the `save` method of every model instance
 in the queryset.
 
+Many-to-many
+~~~~~~~~~~~~
+
+Specifying a ``ManyToManyField`` as a ``collection`` won't work; use an
+intermediate model with a ``PositionField`` instead::
+
+    class Product(models.Model):
+        name = models.CharField(max_length=50)
+
+    class Category(models.Model):
+        name = models.CharField(max_length=50)
+        products = models.ManyToManyField(Product, through='ProductCategory', related_name='categories')
+
+    class ProductCategory(models.Model):
+        product = models.ForeignKey(Product)
+        category = models.ForeignKey(Category)
+        position = PositionField(collection='category')
+
+        class Meta(object):
+            unique_together = ('product', 'category')
+
 
 Limitations
 -----------
