@@ -1,4 +1,4 @@
-from positions.examples.lists.models import List
+from positions.examples.lists.models import List, Item
 
 
 tests = """
@@ -117,6 +117,37 @@ True
 
 >>> write_tests_updated == excersize_updated
 True
+
+
+# create an item using negative index
+# http://github.com/jpwatts/django-positions/issues/#issue/5
+
+>>> l.items.values_list('name', 'position').order_by('position')
+[(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Write Tests', 3)]
+
+>>> fix_issue_5 = Item(list=l, name="Fix Issue #5")
+>>> fix_issue_5.position
+-1
+
+>>> fix_issue_5.position = -2
+>>> fix_issue_5.position
+-2
+
+>>> fix_issue_5.save()
+>>> fix_issue_5.position
+3
+
+>>> l.items.values_list('name', 'position').order_by('position')
+[(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Fix Issue #5', 3), (u'Write Tests', 4)]
+
+# Try again, now that the model has been saved.
+>>> fix_issue_5.position = -2
+>>> fix_issue_5.save()
+>>> fix_issue_5.position
+3
+
+>>> l.items.values_list('name', 'position').order_by('position')
+[(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Fix Issue #5', 3), (u'Write Tests', 4)]
 
 """
 

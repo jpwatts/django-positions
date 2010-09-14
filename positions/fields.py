@@ -55,7 +55,7 @@ class PositionField(models.IntegerField):
         current, updated = getattr(model_instance, cache_name)
 
         if add:
-            current, updated = None, current
+            current, updated = None, updated if updated else current
 
         # existing instance, position not modified; no cleanup required
         if current is not None and updated is None:
