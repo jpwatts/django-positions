@@ -63,4 +63,15 @@ __test__ = {'API_TESTS':"""
 >>> [i.position for i in Item.objects.order_by('position')]
 [0, 1, 2]
 
+
+# Add an item at position zero
+# http://github.com/jpwatts/django-positions/issues/#issue/7
+
+>>> item0 = Item(description="Fix Issue #7")
+>>> item0.position = 0
+>>> item0.save()
+
+>>> Item.objects.values_list('description', 'position').order_by('position')
+[(u'Fix Issue #7', 0), (u'Push to GitHub', 1), (u'Write some tests', 2), (u'Add a `reposition` method', 3)]
+
 """}
