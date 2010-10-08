@@ -149,6 +149,17 @@ True
 >>> l.items.values_list('name', 'position').order_by('position')
 [(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Fix Issue #5', 3), (u'Write Tests', 4)]
 
+
+# create an item using with a position of zero
+http://github.com/jpwatts/django-positions/issues#issue/7
+
+>>> item0 = l.items.create(name="Fix Issue #7", position=0)
+>>> item0.position
+0
+
+>>> l.items.values_list('name', 'position').order_by('position')
+[(u'Fix Issue #7', 0), (u'Go to Bed', 1), (u'Drink less Coke', 2), (u'Exercise', 3), (u'Fix Issue #5', 4), (u'Write Tests', 5)]
+
 """
 
 
