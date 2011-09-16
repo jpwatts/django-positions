@@ -1,0 +1,86 @@
+# create some parent nodes
+
+>>> from positions.examples.nodes.models import Node
+
+>>> Node.objects.create(name='Parent 1')
+<Node: Parent 1>
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 1', 0)]
+
+>>> Node.objects.create(name='Parent 2')
+<Node: Parent 2>
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1)]
+
+>>> parent3 = Node.objects.create(name='Parent 3', position=0)
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 3', 0), (u'Parent 1', 1), (u'Parent 2', 2)]
+
+>>> parent3.position = 999
+>>> parent3.save()
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Parent 3', 2)]
+
+>>> parent3.position = -2
+>>> parent3.save()
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 3', 1), (u'Parent 2', 2)]
+
+>>> parent3.delete()
+
+>>> Node.objects.order_by('position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1)]
+
+
+# create some children
+
+>>> parent1 = Node.objects.order_by('position')[0]
+>>> parent1
+<Node: Parent 1>
+
+>>> parent1.children.create(name='Child 1')
+<Node: Child 1>
+
+>>> Node.objects.order_by('parent__position', 'position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0)]
+
+>>> child2 = parent1.children.create(name='Child 2')
+
+>>> Node.objects.order_by('parent__position', 'position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0), (u'Child 2', 1)]
+
+>>> child2.position = 0
+>>> child2.save()
+
+>>> Node.objects.order_by('parent__position', 'position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 1', 1)]
+
+>>> parent2 = Node.objects.filter(parent__isnull=True).order_by('position')[1]
+>>> parent2
+<Node: Parent 2>
+
+>>> child3 = parent1.children.create(name='Child 3')
+
+>>> child4 = parent2.children.create(name='Child 4')
+>>> child5 = parent2.children.create(name='Child 5')
+>>> child6 = parent2.children.create(name='Child 6')
+
+>>> Node.objects.order_by('parent__position', 'position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 1', 1), (u'Child 3', 2), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)]
+
+#Move nodes around
+
+>>> child2 = Node.objects.get(pk=child2.pk)
+>>> child2.position = 0
+>>> child2.parent = Node.objects.get(pk=parent2.pk)
+>>> setattr(child2, "_debug", True)
+>>> child2.save()
+
+>>> Node.objects.order_by('parent__position', 'position').values_list('name', 'position')
+[(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0), (u'Child 3', 1), (u'Child 2', 0), (u'Child 4', 1), (u'Child 5', 2), (u'Child 6', 3)]
+
