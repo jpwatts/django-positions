@@ -1,11 +1,8 @@
 from django.db import models
-
 from positions.fields import PositionField
 
-
 class Node(models.Model):
-    parent = models.ForeignKey('self', related_name='children', blank=True,
-                               null=True)
+    parent = models.ForeignKey('self', related_name='children', blank=True, null=True)
     name = models.CharField(max_length=50)
     position = PositionField(collection='parent')
 
