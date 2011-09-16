@@ -51,8 +51,30 @@ class PositionField(models.IntegerField):
         return 'PositiveIntegerField'
 
     def pre_save(self, model_instance, add):
+        #NOTE: check if the node has been moved to another collection; if it has, delete it from the old collection.
+        previous_instance = None
+        collection_changed = False
+        if add == False and self.collection:
+            previous_instance = type(model_instance)._default_manager.get(pk=model_instance.pk)
+            for field_name in self.collection:
+                field = model_instance._meta.get_field(field_name)
+                current_field_value = getattr(model_instance, field.attname)
+                previous_field_value = getattr(previous_instance, field.attname)
+                if previous_field_value != current_field_value:
+                    collection_changed = True
+                    break
+        if collection_changed == False:
+            previous_instance = None
+
+        setattr(model_instance, 'collection_changed', collection_changed)
+        if collection_changed:
+            self.remove_from_collection(previous_instance)
+
         cache_name = self.get_cache_name()
         current, updated = getattr(model_instance, cache_name)
+
+        if collection_changed:
+            current = None
 
         if add:
             if updated is None:
@@ -128,9 +150,12 @@ class PositionField(models.IntegerField):
                     filters[field.name] = field_value
         return type(instance)._default_manager.filter(**filters)
 
-    def update_on_delete(self, sender, instance, **kwargs):
-        current = getattr(instance, self.get_cache_name())[0]
+    def remove_from_collection(self, instance):
+        """
+        Removes a positioned item from the collection.
+        """
         queryset = self.get_collection(instance)
+        current = getattr(instance, self.get_cache_name())[0]
         updates = {self.name: models.F(self.name) - 1}
         if self.auto_now_fields:
             now = datetime.datetime.now()
@@ -138,10 +163,15 @@ class PositionField(models.IntegerField):
                 updates[field.name] = now
         queryset.filter(**{'%s__gt' % self.name: current}).update(**updates)
 
+    def update_on_delete(self, sender, instance, **kwargs):
+        self.remove_from_collection(instance)
+
     def update_on_save(self, sender, instance, created, **kwargs):
+        collection_changed = getattr(instance, 'collection_changed', False)
+
         current, updated = getattr(instance, self.get_cache_name())
 
-        if updated is None:
+        if updated is None and collection_changed == False:
             return None
 
         queryset = self.get_collection(instance).exclude(pk=instance.pk)
@@ -152,8 +182,8 @@ class PositionField(models.IntegerField):
             for field in self.auto_now_fields:
                 updates[field.name] = now
 
-        if created:
-            # increment positions gte updated
+        if created or collection_changed:
+            # increment positions gte updated or node moved from another collection
             queryset = queryset.filter(**{'%s__gte' % self.name: updated})
             updates[self.name] = models.F(self.name) + 1
         elif updated > current:
