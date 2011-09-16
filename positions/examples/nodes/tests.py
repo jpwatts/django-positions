@@ -41,6 +41,16 @@ class NodesTestCase(TestCase):
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 1', 1), (u'Child 3', 2), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
+    def test_collection_field_change_sibling_position(self):
+        """
+        Set child6 as the first sibling in its branch.
+        """
+        self.child6.position = 0
+        self.child6.save()
+
+        tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
+        self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 1', 1), (u'Child 3', 2), (u'Child 6', 0), (u'Child 4', 1), (u'Child 5', 2)])
+
     def test_collection_field_change_first_child(self):
         """
         Move child2 to make it the first child of parent2
@@ -99,6 +109,7 @@ class NodesTestCase(TestCase):
 
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0), (u'Child 3', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2), (u'Child 2', 3)])
+
 
 
 def suite():
