@@ -1,0 +1,1 @@
+recursive-include positions/examples/nodes/doctests/*
