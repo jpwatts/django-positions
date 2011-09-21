@@ -110,7 +110,37 @@ class NodesTestCase(TestCase):
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0), (u'Child 3', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2), (u'Child 2', 3)])
 
+    def test_deletion_1(self):
+        """
+        Delete child2
+        """
+        self.child2.delete()
+        tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
+        self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 1', 0), (u'Child 3', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
+    def test_deletion_2(self):
+        """
+        Delete child3
+        """
+        self.child3.delete()
+        tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
+        self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 1', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
+
+    def test_deletion_3(self):
+        """
+        Delete child1
+        """
+        self.child1.delete()
+        tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
+        self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 3', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
+
+    def test_deletion_3(self):
+        """
+        Delete parent1
+        """
+        self.parent1.delete()
+        tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
+        self.assertEqual(tree, [(u'Parent 2', 0), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
 def suite():
     s = unittest.TestSuite()
