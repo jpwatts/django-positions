@@ -134,7 +134,7 @@ class NodesTestCase(TestCase):
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 1', 0), (u'Parent 2', 1), (u'Child 2', 0), (u'Child 3', 1), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
-    def test_deletion_3(self):
+    def test_deletion_4(self):
         """
         Delete parent1
         """
