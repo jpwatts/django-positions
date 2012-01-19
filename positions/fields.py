@@ -4,6 +4,11 @@ import warnings
 from django.db import models
 from django.db.models.signals import post_delete, post_save, pre_delete
 
+try:
+    from django.utils.timezone import now
+except ImportError:
+    now = datetime.datetime.now
+
 
 class PositionField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, default=-1, collection=None, unique_for_field=None, unique_for_fields=None, *args, **kwargs):
@@ -168,9 +173,9 @@ class PositionField(models.IntegerField):
         current = getattr(instance, self.get_cache_name())[0]
         updates = {self.name: models.F(self.name) - 1}
         if self.auto_now_fields:
-            now = datetime.datetime.now()
+            right_now = now()
             for field in self.auto_now_fields:
-                updates[field.name] = now
+                updates[field.name] = right_now
         queryset.filter(**{'%s__gt' % self.name: current}).update(**updates)
 
     def prepare_delete(self, sender, instance, **kwargs):
@@ -193,9 +198,9 @@ class PositionField(models.IntegerField):
                 current = getattr(instance, self.get_cache_name())[0]
                 updates = {self.name: models.F(self.name) - 1}
                 if self.auto_now_fields:
-                    now = datetime.datetime.now()
+                    right_now = now()
                     for field in self.auto_now_fields:
-                        updates[field.name] = now
+                        updates[field.name] = right_now
                 queryset.filter(**{'%s__gt' % self.name: current}).update(**updates)
         setattr(instance, '_next_sibling_pk', None)
 
@@ -211,9 +216,9 @@ class PositionField(models.IntegerField):
 
         updates = {}
         if self.auto_now_fields:
-            now = datetime.datetime.now()
+            right_now = now()
             for field in self.auto_now_fields:
-                updates[field.name] = now
+                updates[field.name] = right_now
 
         if created or collection_changed:
             # increment positions gte updated or node moved from another collection
