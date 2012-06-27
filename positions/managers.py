@@ -15,7 +15,7 @@ class PositionQuerySet(QuerySet):
         post_save.disconnect(position_field.update_on_save, sender=self.model)
         position = 0
         for obj in self.iterator():
-            obj.position = position
+            setattr(obj,self.position_field_name,position)
             if save:
                 obj.save()
             position += 1
