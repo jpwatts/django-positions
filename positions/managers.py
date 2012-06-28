@@ -10,6 +10,11 @@ class PositionQuerySet(QuerySet):
         super(PositionQuerySet, self).__init__(model, query, using)
         self.position_field_name = position_field_name
 
+    def _clone(self, *args, **kwargs):
+        queryset = super(PositionQuerySet, self)._clone(*args, **kwargs)
+        queryset.position_field_name = self.position_field_name
+        return queryset
+
     def reposition(self, save=True):
         position_field = self.model._meta.get_field_by_name(self.position_field_name)[0]
         post_save.disconnect(position_field.update_on_save, sender=self.model)
