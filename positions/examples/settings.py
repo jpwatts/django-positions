@@ -1,3 +1,5 @@
+SECRET_KEY = 'sekr3t'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
