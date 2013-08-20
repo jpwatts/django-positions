@@ -38,6 +38,7 @@ class PositionField(models.IntegerField):
             collection = (collection,)
         self.collection = collection
         self.parent_link = parent_link
+        self._collection_changed =  None
 
     def contribute_to_class(self, cls, name):
         super(PositionField, self).contribute_to_class(cls, name)
@@ -73,7 +74,7 @@ class PositionField(models.IntegerField):
         if not collection_changed:
             previous_instance = None
 
-        setattr(model_instance, 'collection_changed', collection_changed)
+        self._collection_changed = collection_changed
         if collection_changed:
             self.remove_from_collection(previous_instance)
 
@@ -210,7 +211,8 @@ class PositionField(models.IntegerField):
         setattr(instance, '_next_sibling_pk', None)
 
     def update_on_save(self, sender, instance, created, **kwargs):
-        collection_changed = getattr(instance, 'collection_changed', False)
+        collection_changed = self._collection_changed
+        self._collection_changed = None
 
         current, updated = getattr(instance, self.get_cache_name())
 
