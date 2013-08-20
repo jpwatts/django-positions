@@ -12,7 +12,7 @@ class Task(models.Model):
     Base class for lessons/exercises - ordered items within a sub-unit
     """
     sub_unit = models.ForeignKey(SubUnit)
-    position = PositionField(collection='sub_unit')
+    position = PositionField(collection='sub_unit', parent_link='task_ptr')
 
 
 class Lesson(Task):

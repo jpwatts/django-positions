@@ -11,7 +11,7 @@ except ImportError:
 
 
 class PositionField(models.IntegerField):
-    def __init__(self, verbose_name=None, name=None, default=-1, collection=None, unique_for_field=None, unique_for_fields=None, *args, **kwargs):
+    def __init__(self, verbose_name=None, name=None, default=-1, collection=None, parent_link=None, unique_for_field=None, unique_for_fields=None, *args, **kwargs):
         if 'unique' in kwargs:
             raise TypeError("%s can't have a unique constraint." % self.__class__.__name__)
         super(PositionField, self).__init__(verbose_name, name, default=default, *args, **kwargs)
@@ -37,6 +37,7 @@ class PositionField(models.IntegerField):
         if isinstance(collection, basestring):
             collection = (collection,)
         self.collection = collection
+        self.parent_link = parent_link
 
     def contribute_to_class(self, cls, name):
         super(PositionField, self).contribute_to_class(cls, name)
@@ -60,7 +61,7 @@ class PositionField(models.IntegerField):
         #NOTE: check if the node has been moved to another collection; if it has, delete it from the old collection.
         previous_instance = None
         collection_changed = False
-        if add == False and self.collection:
+        if not add and self.collection is not None:
             previous_instance = type(model_instance)._default_manager.get(pk=model_instance.pk)
             for field_name in self.collection:
                 field = model_instance._meta.get_field(field_name)
@@ -69,7 +70,7 @@ class PositionField(models.IntegerField):
                 if previous_field_value != current_field_value:
                     collection_changed = True
                     break
-        if collection_changed == False:
+        if not collection_changed:
             previous_instance = None
 
         setattr(model_instance, 'collection_changed', collection_changed)
@@ -146,7 +147,7 @@ class PositionField(models.IntegerField):
 
     def get_collection(self, instance):
         filters = {}
-        if self.collection:
+        if self.collection is not None:
             for field_name in self.collection:
                 field = instance._meta.get_field(field_name)
                 field_value = getattr(instance, field.attname)
@@ -154,7 +155,11 @@ class PositionField(models.IntegerField):
                     filters['%s__isnull' % field.name] = True
                 else:
                     filters[field.name] = field_value
-        return type(instance)._default_manager.filter(**filters)
+        model = type(instance)
+        parent_link = self.parent_link
+        if parent_link is not None:
+            model = model._meta.get_field(parent_link).rel.to
+        return model._default_manager.filter(**filters)
 
     def get_next_sibling(self, instance):
         """

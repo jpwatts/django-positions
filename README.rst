@@ -69,6 +69,16 @@ intermediate model with a ``PositionField`` instead::
             unique_together = ('product', 'category')
 
 
+Multi-table model inheritance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, if a parent model has a position field that declares a collection,
+child model instances are ordered independently. This behavior can be changed
+by specifying a `parent_link` argument identifying the name of the one-to-one
+field linking the child model to the parent. If `parent_link` is set, all subclass
+instances will be part of a single sequence in each collection.
+
+
 Limitations
 -----------
 

@@ -19,6 +19,10 @@ tests = """
 >>> tea_party.position
 2
 
+>>> quiz = Exercise.objects.create(sub_unit=american_revolution, description="Pop quiz")
+>>> quiz.position
+3
+
 """
 
 

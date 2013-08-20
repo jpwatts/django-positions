@@ -15,4 +15,5 @@ INSTALLED_APPS = (
     'positions.examples.store',
     'positions.examples.photos',
     'positions.examples.school',
+    'positions.examples.restaurants',
 )
