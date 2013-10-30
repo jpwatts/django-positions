@@ -1,5 +1,6 @@
 import datetime
 import warnings
+import types
 
 from django.db import models
 from django.db.models.signals import post_delete, post_save, pre_delete
@@ -39,8 +40,8 @@ class PositionField(models.IntegerField):
         self.collection = collection
         self.parent_link = parent_link
         self._collection_changed =  None
-
-    def contribute_to_class(self, cls, name):
+        
+    def contribute_to_class(self, cls, name ):
         super(PositionField, self).contribute_to_class(cls, name)
         for constraint in cls._meta.unique_together:
             if self.name in constraint:
@@ -50,6 +51,34 @@ class PositionField(models.IntegerField):
             if getattr(field, 'auto_now', False):
                 self.auto_now_fields.append(field)
         setattr(cls, self.name, self)
+
+        def _position_move(instance, up):
+            collection = self.get_collection(instance)
+            cache_name = self.get_cache_name()
+            position = getattr(instance, cache_name)[0]
+            if up:
+                collection = collection.filter(**{'%s__gt' % self.name: position})
+            else:
+                collection = collection.order_by('-%s' % self.name).filter(**{'%s__lt' % self.name: position})
+            try:
+                replacement = collection[0]
+            except IndexError:
+                return
+            current, updated = getattr(instance, cache_name), getattr(replacement, cache_name)
+            setattr(instance, cache_name, updated)
+            setattr(replacement, cache_name, current)
+            instance.save()
+            replacement.save()
+    
+        def position_down(self):
+            return _position_move(self, up=False)
+
+        def position_up(self):
+            return _position_move(self, up=True)
+
+        setattr(cls, 'position_down', position_down )
+        setattr(cls, 'position_up', position_up )
+
         pre_delete.connect(self.prepare_delete, sender=cls)
         post_delete.connect(self.update_on_delete, sender=cls)
         post_save.connect(self.update_on_save, sender=cls)
@@ -167,8 +196,19 @@ class PositionField(models.IntegerField):
         Returns the next sibling of this instance.
         """
         try:
-            return self.get_collection(instance).filter(**{'%s__gt' % self.name: getattr(instance, self.get_cache_name())[0]})[0]
-        except:
+            position = getattr(instance, self.get_cache_name())[0]
+            return self.get_collection(instance).filter(**{'%s__gt' % self.name: position}).order_by('%s' % self.name)[0]
+        except IndexError:
+            return None
+
+    def get_previous_sibling(self, instance):
+        """
+        Returns the previous sibling of this instance.
+        """
+        try:
+            position = getattr(instance, self.get_cache_name())[0]
+            return self.get_collection(instance).filter(**{'%s__lt' % self.name: position}).order_by('-%s' % self.name)[0]
+        except IndexError:
             return None
 
     def remove_from_collection(self, instance):

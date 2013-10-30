@@ -4,3 +4,6 @@
 *.un~
 /build
 /dist
+.DS_Store
+._*
+.svn
