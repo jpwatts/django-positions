@@ -227,19 +227,21 @@ class PositionField(models.IntegerField):
             for field in self.auto_now_fields:
                 updates[field.name] = right_now
 
-        if self.name:
-            if created or collection_changed:
-                # increment positions gte updated or node moved from another collection
-                queryset = queryset.filter(**{'%s__gte' % self.name: updated})
-                updates[self.name] = models.F(self.name) + 1
-            elif updated > current:
-                # decrement positions gt current and lte updated
-                queryset = queryset.filter(**{'%s__gt' % self.name: current, '%s__lte' % self.name: updated})
-                updates[self.name] = models.F(self.name) - 1
-            else:
-                # increment positions lt current and gte updated
-                queryset = queryset.filter(**{'%s__lt' % self.name: current, '%s__gte' % self.name: updated})
-                updates[self.name] = models.F(self.name) + 1
+        if updated is None and created:
+            updated = 0
+
+        if created or collection_changed:
+            # increment positions gte updated or node moved from another collection
+            queryset = queryset.filter(**{'%s__gte' % self.name: updated})
+            updates[self.name] = models.F(self.name) + 1
+        elif updated > current:
+            # decrement positions gt current and lte updated
+            queryset = queryset.filter(**{'%s__gt' % self.name: current, '%s__lte' % self.name: updated})
+            updates[self.name] = models.F(self.name) - 1
+        else:
+            # increment positions lt current and gte updated
+            queryset = queryset.filter(**{'%s__lt' % self.name: current, '%s__gte' % self.name: updated})
+            updates[self.name] = models.F(self.name) + 1
 
         queryset.update(**updates)
         setattr(instance, self.get_cache_name(), (updated, None))
