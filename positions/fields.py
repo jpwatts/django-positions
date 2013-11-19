@@ -227,6 +227,9 @@ class PositionField(models.IntegerField):
             for field in self.auto_now_fields:
                 updates[field.name] = right_now
 
+        if updated is None and created:
+            updated = 0
+
         if created or collection_changed:
             # increment positions gte updated or node moved from another collection
             queryset = queryset.filter(**{'%s__gte' % self.name: updated})
