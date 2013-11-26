@@ -142,6 +142,20 @@ class NodesTestCase(TestCase):
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 2', 0), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
+    def test_changing_parent_to_child(self):
+        node = Node.objects.create(name='Original Node')
+        new_parent = Node.objects.create(name='New Parent')
+        node.parent = new_parent
+
+        try:
+            node.save()
+        except TypeError:
+            self.fail('Saving node raised a TypeError')
+
+        self.assertEqual(node.position, 0)
+        self.assertEqual(new_parent.position, 0)
+
+
 def suite():
     s = unittest.TestSuite()
     s.addTest(unittest.TestLoader().loadTestsFromTestCase(NodesTestCase))
