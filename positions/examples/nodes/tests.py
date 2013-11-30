@@ -4,8 +4,8 @@ import doctest
 import os
 import unittest
 
-class NodesTestCase(TestCase):
 
+class NodesTestCase(TestCase):
     def setUp(self):
         """
         Creates a simple tree::
@@ -33,6 +33,9 @@ class NodesTestCase(TestCase):
         self.child4 = self.parent2.children.create(name='Child 4')
         self.child5 = self.parent2.children.create(name='Child 5')
         self.child6 = self.parent2.children.create(name='Child 6')
+
+    def tearDown(self):
+        Node.objects.all().delete()
 
     def test_structure(self):
         """
@@ -142,18 +145,54 @@ class NodesTestCase(TestCase):
         tree = list(Node.objects.order_by('parent__position', 'position').values_list('name', 'position'))
         self.assertEqual(tree, [(u'Parent 2', 0), (u'Child 4', 0), (u'Child 5', 1), (u'Child 6', 2)])
 
-    def test_changing_parent_to_child(self):
-        node = Node.objects.create(name='Original Node')
-        new_parent = Node.objects.create(name='New Parent')
-        node.parent = new_parent
 
-        try:
-            node.save()
-        except TypeError:
-            self.fail('Saving node raised a TypeError')
+class ReorderTestCase(TestCase):
+    def tearDown(self):
+        Node.objects.all().delete()
 
-        self.assertEqual(node.position, 0)
-        self.assertEqual(new_parent.position, 0)
+    def test_assigning_parent(self):
+        a = Node.objects.create(name=u"A")
+        b = Node.objects.create(name=u"B")
+        c = Node.objects.create(name=u"C")
+        self.assertEqual(a.position, 0)
+        self.assertEqual(b.position, 1)
+        self.assertEqual(c.position, 2)
+        b.parent = a
+        b.save()
+        # A hasn't changed.
+        self.assertEqual(a.position, 0)
+        # B has been positioned relative to A.
+        self.assertEqual(b.position, 0)
+        # C has moved up to fill the gap left by B.
+        self.assertEqual(c.position, 1)
+
+    def test_changing_parent(self):
+        a = Node.objects.create(name=u"A")
+        b = Node.objects.create(name=u"B")
+        c = Node.objects.create(name=u"C", parent=a)
+        d = Node.objects.create(name=u"D", parent=a)
+        self.assertEqual(a.parent, None)
+        self.assertEqual(a.position, 0)
+        self.assertEqual(b.parent, None)
+        self.assertEqual(b.position, 1)
+        self.assertEqual(c.parent, a)
+        self.assertEqual(c.position, 0)
+        self.assertEqual(d.parent, a)
+        self.assertEqual(d.position, 1)
+        c.parent = b
+        c.save()
+        # A's position hasn't changed.
+        self.assertEqual(a.parent, None)
+        self.assertEqual(a.position, 0)
+        # B's position hasn't changed.
+        self.assertEqual(b.parent, None)
+        self.assertEqual(b.position, 1)
+        # C's relative position hasn't changed.
+        self.assertEqual(c.parent, b)
+        self.assertEqual(c.position, 0)
+        # D has moved up to fill the gap left by C.
+        self.assertEqual(d.parent, a)
+        self.assertEqual(d.position, 0)
 
 
 def suite():
