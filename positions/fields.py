@@ -88,6 +88,8 @@ class PositionField(models.IntegerField):
             if updated is None:
                 updated = current
             current = None
+        elif updated is None:
+            updated = -1
 
         # existing instance, position not modified; no cleanup required
         if current is not None and updated is None:
@@ -228,7 +230,7 @@ class PositionField(models.IntegerField):
                 updates[field.name] = right_now
 
         if updated is None and created:
-            updated = 0
+            updated = -1
 
         if created or collection_changed:
             # increment positions gte updated or node moved from another collection
