@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from django.contrib.contenttypes.models import ContentType
 
 from positions.examples.lists.models import List
@@ -46,3 +49,8 @@ tests = """
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests

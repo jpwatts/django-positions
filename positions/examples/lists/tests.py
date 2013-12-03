@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from positions.examples.lists.models import List, Item
 
 
@@ -164,3 +167,8 @@ http://github.com/jpwatts/django-positions/issues#issue/7
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests

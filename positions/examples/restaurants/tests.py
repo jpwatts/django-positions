@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from django.db import models
 
 from positions.examples.restaurants.models import Menu, Food, Drink
@@ -27,3 +30,8 @@ tests = """
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests

@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from django.db import models
 
 from positions.examples.school.models import SubUnit, Lesson, Exercise
@@ -27,7 +30,13 @@ tests = """
 >>> intro_lesson = Lesson.objects.create(sub_unit=american_revolution, title="The Intro", text="...", position=0)
 >>> american_revolution.task_set.values_list('title', 'position')
 [(u'The Intro', 0), (u'No Taxation without Representation', 1), (u'Paper', 2), (u'Boston Tea Party', 3)]
+
 """
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests

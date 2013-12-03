@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from positions.examples.photos.models import Album, Photo
 
 
@@ -31,3 +34,8 @@ tests = """
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests

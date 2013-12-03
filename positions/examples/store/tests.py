@@ -1,3 +1,6 @@
+import doctest
+import unittest
+
 from django.db import models
 
 from positions import PositionField
@@ -64,3 +67,8 @@ Moving cap in sporting goods shouldn't effect its position in clothes.
 
 
 __test__ = {'tests': tests}
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite())
+    return tests
