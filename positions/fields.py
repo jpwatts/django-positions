@@ -9,6 +9,12 @@ try:
 except ImportError:
     now = datetime.datetime.now
 
+# define basestring for python 3
+try:
+    basestring
+except NameError:
+    basestring = (str, bytes)
+
 
 class PositionField(models.IntegerField):
     def __init__(self, verbose_name=None, name=None, default=-1, collection=None, parent_link=None, unique_for_field=None, unique_for_fields=None, *args, **kwargs):
