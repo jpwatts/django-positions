@@ -1,6 +1,7 @@
 import doctest
 import unittest
 
+from positions.examples.photos.forms import PhotoForm
 from positions.examples.photos.models import Album, Photo
 
 
@@ -29,6 +30,21 @@ tests = """
 
 >>> album.photos.order_by('position').values_list('name', 'position')
 [(u'Cozumel', 0), (u'Grand Cayman', 1), (u'Jamaica', 2), (u'Bahamas', 3)]
+
+>>> cozumel.name = "Cozumel, Mexico"
+>>> cozumel.save(update_fields=['name'])
+>>> cozumel.position
+0
+
+>>> jamaica.name = "Ocho Rios, Jamaica"
+>>> jamaica.save(update_fields=['name', 'position'])
+>>> jamaica.position
+2
+
+>>> grand_cayman_form = PhotoForm(dict(name="Georgetown, Grand Cayman"), instance=grand_cayman)
+>>> grand_cayman = grand_cayman_form.save()
+>>> grand_cayman.position
+1
 
 """
 
