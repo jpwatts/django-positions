@@ -224,7 +224,7 @@ class PositionField(models.IntegerField):
 
         current, updated = getattr(instance, self.get_cache_name())
 
-        if updated is None and collection_changed == False:
+        if updated is None and not collection_changed:
             return None
 
         queryset = self.get_collection(instance).exclude(pk=instance.pk)
