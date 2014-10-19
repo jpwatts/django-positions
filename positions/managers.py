@@ -6,7 +6,7 @@ from positions.fields import PositionField
 
 
 class PositionQuerySet(QuerySet):
-    def __init__(self, model=None, query=None, using=None, position_field_name='position'):
+    def __init__(self, model=None, query=None, using=None, position_field_name='position', hints=None):
         super(PositionQuerySet, self).__init__(model, query, using)
         self.position_field_name = position_field_name
 
