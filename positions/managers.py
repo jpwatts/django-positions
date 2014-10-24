@@ -33,7 +33,7 @@ class PositionManager(Manager):
         super(PositionManager, self).__init__()
         self.position_field_name = position_field_name
 
-    def get_query_set(self):
+    def get_queryset(self):
         return PositionQuerySet(self.model, position_field_name=self.position_field_name)
 
     def reposition(self):
