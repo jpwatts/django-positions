@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 
 from positions.fields import PositionField
 
+import logging
+logger = logging.getLogger(__name__)
 
 class PositionQuerySet(QuerySet):
     def __init__(self, model=None, query=None, using=None, position_field_name='position', hints=None):
