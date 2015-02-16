@@ -5,33 +5,37 @@ from django.db import models
 
 from positions.examples.restaurants.models import Menu, Food, Drink
 
+from django.test import TestCase
 
-tests = """
+class GenericTestCase(TestCase):
+    def setUp(self):
+        pass
 
->>> romanos = Menu.objects.create(name="Romano's Pizza")
+    def tearDown(self):
+        pass
 
->>> pizza = Food.objects.create(menu=romanos, name="Pepperoni")
->>> pizza.position
-0
+    # @unittest.skip("Some reason. If you are reading this in a test run someone did not fill this in.")
+    def test_doctests_standin(self):
+        # This code just contains the old doctests for this module. They should be most likely split out into their own
+        # tests at some point.
+        self.romanos = Menu.objects.create(name="Romano's Pizza")
 
->>> wine = Drink.objects.create(menu=romanos, name="Merlot")
->>> wine.position
-0
+        self.pizza = Food.objects.create(menu=self.romanos, name="Pepperoni")
+        result = self.pizza.position
+        expected_result = 0
+        self.assertEqual(result, expected_result)
 
->>> spaghetti = Food.objects.create(menu=romanos, name="Spaghetti & Meatballs")
->>> spaghetti.position
-1
+        self.wine = Drink.objects.create(menu=self.romanos, name="Merlot")
+        result = self.wine.position
+        expected_result = 0
+        self.assertEqual(result, expected_result)
 
->>> soda = Drink.objects.create(menu=romanos, name="Coca-Cola")
->>> soda.position
-1
+        self.spaghetti = Food.objects.create(menu=self.romanos, name="Spaghetti & Meatballs")
+        result = self.spaghetti.position
+        expected_result = 1
+        self.assertEqual(result, expected_result)
 
-"""
-
-
-__test__ = {'tests': tests}
-
-
-def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite())
-    return tests
+        self.soda = Drink.objects.create(menu=self.romanos, name="Coca-Cola")
+        result = self.soda.position
+        expected_result = 1
+        self.assertEqual(result, expected_result)

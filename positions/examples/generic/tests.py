@@ -6,51 +6,47 @@ from django.contrib.contenttypes.models import ContentType
 from positions.examples.lists.models import List
 from positions.examples.generic.models import GenericThing
 
-tests = """
->>> l = List.objects.create(name='To Do')
->>> ct = ContentType.objects.get_for_model(l)
->>> t1 = GenericThing.objects.create(name="First Generic Thing",
-...                                  object_id=l.pk,
-...                                  content_type=ct)
+from django.test import TestCase
 
->>> t2 = GenericThing.objects.create(name="Second Generic Thing",
-...                                  object_id=l.pk,
-...                                  content_type=ct)
->>> t1.position
-0
->>> t2.position
-1
->>> t1.position = 1
->>> t1.save()
+class GenericTestCase(TestCase):
+    def setUp(self):
+        pass
 
->>> t1.position
-1
->>> t2 = GenericThing.objects.get(pk=2)
->>> t2.position
-0
->>> t1.delete()
+    def tearDown(self):
+        GenericThing.objects.all().delete()
+        ContentType.objects.all().delete()
+        List.objects.all().delete()
 
->>> GenericThing.objects.filter(object_id=l.pk, content_type=ct).values_list('name', 'position').order_by('position')
-[(u'Second Generic Thing', 0)]
->>> t3 = GenericThing.objects.create(object_id=l.pk, content_type=ct, name='Mr. None')
->>> t3.save()
->>> t3.position
-1
->>> t4 = GenericThing.objects.create(object_id=l.pk, content_type=ct, name='Mrs. None')
->>> t4.position
-2
->>> t4.position = -2
->>> t4.save()
->>> t4.position
-1
->>> GenericThing.objects.order_by('position').values_list('name', flat=True)
-[u'Second Generic Thing', u'Mrs. None', u'Mr. None']
-"""
+    # @unittest.skip("Some reason. If you are reading this in a test run someone did not fill this in.")
+    def test_doctests_standin(self):
+        # This code just contains the old doctests for this module. They should be most likely split out into their own
+        # tests at some point.
+        self.l = List.objects.create(name='To Do')
+        self.ct = ContentType.objects.get_for_model(self.l)
+        self.t1 = GenericThing.objects.create(name="First Generic Thing", object_id=self.l.pk, content_type=self.ct)
 
+        self.t2 = GenericThing.objects.create(name="Second Generic Thing", object_id=self.l.pk, content_type=self.ct)
+        self.assertEquals(self.t1.position, 0)
+        self.assertEquals(self.t2.position, 1)
+        self.t1.position = 1
+        self.t1.save()
 
-__test__ = {'tests': tests}
+        self.assertEquals(self.t1.position, 1)
+        self.t2 = GenericThing.objects.get(pk=2)
+        self.assertEquals(self.t2.position, 0)
+        self.t1.delete()
 
-
-def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite())
-    return tests
+        actual_order = list(GenericThing.objects.filter(object_id=self.l.pk, content_type=self.ct).values_list('name', 'position').order_by('position'))
+        expected_order = [(u'Second Generic Thing', 0)]
+        self.assertEqual(actual_order, expected_order)
+        self.t3 = GenericThing.objects.create(object_id=self.l.pk, content_type=self.ct, name='Mr. None')
+        self.t3.save()
+        self.assertEquals(self.t3.position, 1)
+        self.t4 = GenericThing.objects.create(object_id=self.l.pk, content_type=self.ct, name='Mrs. None')
+        self.assertEquals(self.t4.position, 2)
+        self.t4.position = -2
+        self.t4.save()
+        self.assertEquals(self.t4.position, 1)
+        actual_order = list(GenericThing.objects.order_by('position').values_list('name', flat=True))
+        expected_order = [u'Second Generic Thing', u'Mrs. None', u'Mr. None']
+        self.assertEqual(actual_order, expected_order)
