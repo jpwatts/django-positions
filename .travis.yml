@@ -1,0 +1,13 @@
+language: python
+python:
+  - "2.7"
+env:
+  - "DJANGO_VERSION=1.7.4 DB=postgres"
+  - "DJANGO_VERSION=1.7.4 DB=sqlite"
+# command to install dependencies
+install:
+  - "pip install -q Django==$DJANGO_VERSION"
+  - "pip install -q psycopg2==2.6"
+
+# command to run tests
+script: django-admin test --settings positions.examples.settings_$DB
