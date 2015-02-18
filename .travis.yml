@@ -16,7 +16,7 @@ install:
   - "pip install -q psycopg2==2.6"
 
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database django_positions;' -U postgres
 
 # command to run tests
 script: django-admin test --pythonpath=`pwd`  --settings positions.examples.settings_$DB_ci
