@@ -9,6 +9,8 @@ python:
 env:
   - "DJANGO_VERSION=1.7.4 DB=postgres"
   - "DJANGO_VERSION=1.7.4 DB=sqlite"
+  - "DJANGO_VERSION=1.6.10 DB=postgres"
+  - "DJANGO_VERSION=1.6.10 DB=sqlite"
 # command to install dependencies
 
 install:
