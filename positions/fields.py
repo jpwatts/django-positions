@@ -60,10 +60,6 @@ class PositionField(models.IntegerField):
         post_delete.connect(self.update_on_delete, sender=cls)
         post_save.connect(self.update_on_save, sender=cls)
 
-    def get_internal_type(self):
-        # pre_save always returns a value >= 0
-        return 'PositiveIntegerField'
-
     def pre_save(self, model_instance, add):
         #NOTE: check if the node has been moved to another collection; if it has, delete it from the old collection.
         previous_instance = None
