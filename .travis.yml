@@ -19,4 +19,4 @@ before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 
 # command to run tests
-script: django-admin test --pythonpath=`pwd`  --settings positions.examples.settings_$DB
+script: django-admin test --pythonpath=`pwd`  --settings positions.examples.settings_$DB_ci
