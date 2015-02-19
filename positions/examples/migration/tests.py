@@ -1,9 +1,8 @@
-import doctest
-import unittest
+from unittest import skipIf
 from models import MigrationTest
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
-
+import django
 
 class MigrationTestCase(TestCase):
     def setUp(self):
@@ -12,6 +11,7 @@ class MigrationTestCase(TestCase):
     def tearDown(self):
         pass
 
+    @skipIf(django.VERSION < (1,7), 'Skipping migration test because Django < 1.7')
     def test_migration(self):
         # The data migration should have inserted the following record. This test just verifies that the data is there.
         # Ideally this test would run the migrations but setting up a data migration is faster for now.
