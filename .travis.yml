@@ -21,4 +21,4 @@ before_script:
   - psql -c 'create database django_positions;' -U postgres
 
 # command to run tests
-script: django-admin test --pythonpath=`pwd`  --settings positions.examples.ci_settings_$DB
+script: django-admin.py test --pythonpath=`pwd`  --settings positions.examples.ci_settings_$DB positions
