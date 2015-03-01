@@ -2,6 +2,11 @@
 Django Positions
 ================
 
+
+.. image:: https://travis-ci.org/jpwatts/django-positions.svg?branch=master
+    :target: https://travis-ci.org/jpwatts/django-positions
+
+
 This module provides ``PositionField``, a model field for `Django`_ that allows
 instances of a model to be sorted by a user-specified position.  Conceptually,
 the field works like a list index: when the position of one item is changed, the
