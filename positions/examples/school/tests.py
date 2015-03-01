@@ -1,3 +1,4 @@
+from django.test import TestCase
 import doctest
 import unittest
 
@@ -6,37 +7,34 @@ from django.db import models
 from positions.examples.school.models import SubUnit, Lesson, Exercise
 
 
-tests = """
+class SchoolsTestCase(TestCase):
+    def setUp(self):
+        self.american_revolution = SubUnit.objects.create(name="American Revolution")
+        self.no_taxation = Lesson.objects.create(sub_unit=self.american_revolution, title="No Taxation without Representation", text="...")
+        self.assertEqual(self.no_taxation.position, 0)
 
->>> american_revolution = SubUnit.objects.create(name="American Revolution")
+        self.research_paper = Exercise.objects.create(sub_unit=self.american_revolution, title="Paper", description="Two pages, double spaced")
+        self.assertEqual(self.research_paper.position, 1)
 
->>> no_taxation = Lesson.objects.create(sub_unit=american_revolution, title="No Taxation without Representation", text="...")
->>> no_taxation.position
-0
+        self.tea_party = Lesson.objects.create(sub_unit=self.american_revolution, title="Boston Tea Party", text="...")
+        self.assertEqual(self.tea_party.position, 2)
 
->>> research_paper = Exercise.objects.create(sub_unit=american_revolution, title="Paper", description="Two pages, double spaced")
->>> research_paper.position
-1
+        self.quiz = Exercise.objects.create(sub_unit=self.american_revolution, title="Pop Quiz", description="...")
+        self.assertEqual(self.quiz.position, 3)
 
->>> tea_party = Lesson.objects.create(sub_unit=american_revolution, title="Boston Tea Party", text="...")
->>> tea_party.position
-2
+    def tearDown(self):
+        SubUnit.objects.all().delete()
 
->>> quiz = Exercise.objects.create(sub_unit=american_revolution, title="Pop Quiz", description="...")
->>> quiz.position
-3
-
-# create a task with an explicit position
->>> intro_lesson = Lesson.objects.create(sub_unit=american_revolution, title="The Intro", text="...", position=0)
->>> american_revolution.task_set.values_list('title', 'position')
-[(u'The Intro', 0), (u'No Taxation without Representation', 1), (u'Paper', 2), (u'Boston Tea Party', 3)]
-
-"""
-
-
-__test__ = {'tests': tests}
-
-
-def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite())
-    return tests
+    @unittest.skip("This should not fail! Skipping during test development.")
+    def test_explicit_position(self):
+        # create a task with an explicit position
+        self.intro_lesson = Lesson.objects.create(sub_unit=self.american_revolution, title="The Intro", text="...", position=0)
+        actual_order = list(self.american_revolution.task_set.values_list('title', 'position'))
+        expected_order = [
+            (u'The Intro', 0),
+            (u'No Taxation without Representation', 1),
+            (u'Paper', 2),
+            (u'Boston Tea Party', 3),
+            (u'Pop Quiz', 4)
+        ]
+        self.assertEqual(actual_order, expected_order)

@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'positions.examples.todo',
     'positions.examples.generic',
     'positions.examples.lists',
@@ -68,7 +67,12 @@ WSGI_APPLICATION = 'local.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_positions',
+        'USER': 'django_positions',
+        'PASSWORD': 'django_positions',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 

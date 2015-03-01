@@ -1,0 +1,28 @@
+language: python
+
+addons:
+  postgresql: "9.3"
+
+python:
+  - "2.7"
+
+env:
+  - "DJANGO_VERSION=1.7.4 DB=postgres"
+  - "DJANGO_VERSION=1.7.4 DB=sqlite"
+  - "DJANGO_VERSION=1.7.4 DB=mysql"
+  - "DJANGO_VERSION=1.6.10 DB=postgres"
+  - "DJANGO_VERSION=1.6.10 DB=sqlite"
+  - "DJANGO_VERSION=1.6.10 DB=mysql"
+# command to install dependencies
+
+install:
+  - "pip install -q Django==$DJANGO_VERSION"
+  - "if [[ $DB == mysql ]]; then pip install -q mysql-python --use-mirrors; fi"
+  - "if [[ $DB == postgres ]]; then pip install -q psycopg2 --use-mirrors; fi"
+
+before_script:
+  - psql -c 'create database django_positions;' -U postgres
+  - mysql -e 'create database django_positions;'
+
+# command to run tests
+script: django-admin.py test --pythonpath=`pwd`  --settings positions.examples.ci_settings_$DB positions

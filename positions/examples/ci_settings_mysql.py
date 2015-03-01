@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'positions.examples.todo',
     'positions.examples.generic',
     'positions.examples.lists',
@@ -68,7 +67,10 @@ WSGI_APPLICATION = 'local.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_positions',
+        'USER': 'root',
+        'PASSWORD': '',
     }
 }
 
@@ -121,7 +123,7 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'debug.log',
             'maxBytes': 1024*1024*5,
-            'formatter': 'verbose'
+            'formatter': 'simple'
         },
     },
     'loggers': {
