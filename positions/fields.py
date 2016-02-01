@@ -90,8 +90,8 @@ class PositionField(models.IntegerField):
             if updated is None:
                 updated = current
             current = None
-        elif updated is None:
-            updated = -1
+        #elif updated is None:
+        #    updated = -1
 
         # existing instance, position not modified; no cleanup required
         if current is not None and updated is None:
