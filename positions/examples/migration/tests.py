@@ -1,8 +1,9 @@
 from unittest import skipIf
-from models import MigrationTest
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 import django
+
+from .models import MigrationTest
 
 class MigrationTestCase(TestCase):
     def setUp(self):
@@ -17,5 +18,5 @@ class MigrationTestCase(TestCase):
         # Ideally this test would run the migrations but setting up a data migration is faster for now.
         test = MigrationTest.objects.create(name="Some Person", age=37, favorite_color='Blue')
         result = list(MigrationTest.objects.order_by('position').values_list('name', 'age', 'favorite_color', 'position'))
-        expected_result = [(u'Test Name', 99, u'Red', -1), (u'Some Person', 37, u'Blue', 0)]
+        expected_result = [('Test Name', 99, 'Red', -1), ('Some Person', 37, 'Blue', 0)]
         self.assertEqual(result, expected_result)

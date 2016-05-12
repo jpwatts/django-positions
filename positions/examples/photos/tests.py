@@ -2,8 +2,8 @@ from django.test import TestCase
 import doctest
 import unittest
 import pprint
-from positions.examples.photos.forms import PhotoForm
-from positions.examples.photos.models import Album, Photo
+from .forms import PhotoForm
+from .models import Album, Photo
 
 class PhotosTestCase(TestCase):
     def setUp(self):
@@ -35,7 +35,7 @@ class PhotosTestCase(TestCase):
 
     def test_reordered_positions(self):
         ordered_by_position = list(self.album.photos.order_by('position').values_list('name', 'position'))
-        expected_order = [(u'Cozumel', 0), (u'Grand Cayman', 1), (u'Jamaica', 2), (u'Bahamas', 3)]
+        expected_order = [('Cozumel', 0), ('Grand Cayman', 1), ('Jamaica', 2), ('Bahamas', 3)]
         self.assertEqual(
             ordered_by_position,
             expected_order
