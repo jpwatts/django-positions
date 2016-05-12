@@ -109,11 +109,12 @@ class GenericTestCase(TestCase):
 
         # check auto_now updates
         time.sleep(1)  # sleep to guarantee updated time increases
-        sleep_updated, exercise_updated, eat_better_updated, write_tests_updated = [i.updated for i in self.l.items.order_by('position')]
-        self.eat_better = self.l.items.order_by('-position')[1]
+        sleep_updated, exercise_updated, eat_better_updated, write_tests_updated = [i.updated for i in self.l.items.all().order_by('position')]
+        self.eat_better = self.l.items.all().order_by('-position')[1]
         self.eat_better.position = 1
         self.eat_better.save()
-        self.todo_list = list(self.l.items.order_by('position'))
+        time.sleep(1)  # sleep to guarantee updated time increases
+        self.todo_list=list(self.l.items.all().order_by('position'))
 
         result = sleep_updated == self.todo_list[0].updated
         expected_result = True
