@@ -148,6 +148,8 @@ class PositionField(models.IntegerField):
             current, updated = value, None
         else:
             updated = value
+
+        instance.__dict__[self.name] = value # Django 1.10 fix for deferred fields        
         setattr(instance, cache_name, (current, updated))
 
     def get_collection(self, instance):
