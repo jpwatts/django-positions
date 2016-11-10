@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
  
 setup(
     name='django-positions',
-    version='0.5.3',
+    version='0.5.4',
     description='(Django Positions needs a new maintainer) A Django field for custom model ordering',
     author='Joel Watts',
     author_email='joel@joelwatts.com',
