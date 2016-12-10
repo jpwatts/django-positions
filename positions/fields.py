@@ -90,13 +90,16 @@ class PositionField(models.IntegerField):
             if updated is None:
                 updated = current
             current = None
-        #elif updated is None:
-        #    updated = -1
 
         # existing instance, position not modified; no cleanup required
         if current is not None and updated is None:
             return current
 
+        # if updated is still unknown set the object to the last position,
+        # either it is a new object or collection has been changed
+        if updated is None:
+            updated = -1
+        
         collection_count = self.get_collection(model_instance).count()
         if current is None:
             max_position = collection_count
