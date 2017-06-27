@@ -1,7 +1,7 @@
 import doctest
 import unittest
 
-from positions.examples.todo.models import Item
+from .models import Item
 
 from django.test import TestCase
 
@@ -37,12 +37,12 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result =  list(Item.objects.order_by('index').values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Write some tests',), (u'Push to GitHub',)]
+        expected_result = [('Add a `reposition` method',), ('Write some tests',), ('Push to GitHub',)]
         self.assertEqual(result, expected_result)
 
         self.alphabetized = Item.objects.order_by('description')
         result = list(self.alphabetized.values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Push to GitHub',), (u'Write some tests',)]
+        expected_result = [('Add a `reposition` method',), ('Push to GitHub',), ('Write some tests',)]
         self.assertEqual(result, expected_result)
 
         result = self.alphabetized.position_field_name
@@ -51,21 +51,21 @@ class GenericTestCase(TestCase):
 
         self.repositioned = self.alphabetized.reposition(save=False)
         result = list(self.repositioned.values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Push to GitHub',), (u'Write some tests',)]
+        expected_result = [('Add a `reposition` method',), ('Push to GitHub',), ('Write some tests',)]
         self.assertEqual(result, expected_result)
 
         # Make sure the position wasn't saved
         result = list(Item.objects.order_by('index').values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Write some tests',), (u'Push to GitHub',)]
+        expected_result = [('Add a `reposition` method',), ('Write some tests',), ('Push to GitHub',)]
         self.assertEqual(result, expected_result)
 
         self.repositioned = self.alphabetized.reposition()
         result = list(self.repositioned.values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Push to GitHub',), (u'Write some tests',)]
+        expected_result = [('Add a `reposition` method',), ('Push to GitHub',), ('Write some tests',)]
         self.assertEqual(result, expected_result)
 
         result = list(Item.objects.order_by('index').values_list('description'))
-        expected_result = [(u'Add a `reposition` method',), (u'Push to GitHub',), (u'Write some tests',)]
+        expected_result = [('Add a `reposition` method',), ('Push to GitHub',), ('Write some tests',)]
         self.assertEqual(result, expected_result)
 
         self.item = Item.objects.order_by('index')[0]
@@ -81,7 +81,7 @@ class GenericTestCase(TestCase):
 
         # Make sure the signals are still connected
         result = list(Item.objects.order_by('index').values_list('description'))
-        expected_result = [(u'Push to GitHub',), (u'Write some tests',), (u'Add a `reposition` method',)]
+        expected_result = [('Push to GitHub',), ('Write some tests',), ('Add a `reposition` method',)]
         self.assertEqual(result, expected_result)
 
         result = [i.index for i in Item.objects.order_by('index')]
@@ -97,5 +97,5 @@ class GenericTestCase(TestCase):
         self.item0.save()
 
         result = list(Item.objects.values_list('description', 'index').order_by('index'))
-        expected_result = [(u'Fix Issue #7', 0), (u'Push to GitHub', 1), (u'Write some tests', 2), (u'Add a `reposition` method', 3)]
+        expected_result = [('Fix Issue #7', 0), ('Push to GitHub', 1), ('Write some tests', 2), ('Add a `reposition` method', 3)]
         self.assertEqual(result, expected_result)

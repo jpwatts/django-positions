@@ -4,7 +4,7 @@ import unittest
 from django.db import models
 
 from positions import PositionField
-from positions.examples.store.models import Product, Category, ProductCategory
+from .models import Product, Category, ProductCategory
 
 from django.test import TestCase
 
@@ -48,11 +48,11 @@ class StoreTestCase(TestCase):
         self.ball_in_sporting_goods = ProductCategory.objects.create(product=self.ball, category=self.sporting_goods)
 
         actual_order = list(ProductCategory.objects.filter(category=self.clothes).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'Cap', 0), (u'T-shirt', 1), (u'Jeans', 2), (u'Jersey', 3)]
+        expected_order = [('Cap', 0), ('T-shirt', 1), ('Jeans', 2), ('Jersey', 3)]
         self.assertEqual(actual_order, expected_order)
 
         actual_order = list(ProductCategory.objects.filter(category=self.sporting_goods).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'Bat', 0), (u'Cap', 1), (u'Glove', 2), (u'Jersey', 3), (u'Ball', 4)]
+        expected_order = [('Bat', 0), ('Cap', 1), ('Glove', 2), ('Jersey', 3), ('Ball', 4)]
         self.assertEqual(actual_order, expected_order)
 
         # Moving cap in sporting goods shouldn't effect its position in clothes.
@@ -61,20 +61,20 @@ class StoreTestCase(TestCase):
         self.cap_in_sporting_goods.save()
 
         actual_order = list(ProductCategory.objects.filter(category=self.clothes).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'Cap', 0), (u'T-shirt', 1), (u'Jeans', 2), (u'Jersey', 3)]
+        expected_order = [('Cap', 0), ('T-shirt', 1), ('Jeans', 2), ('Jersey', 3)]
         self.assertEqual(actual_order, expected_order)
 
         actual_order = list(ProductCategory.objects.filter(category=self.sporting_goods).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'Bat', 0), (u'Glove', 1), (u'Jersey', 2), (u'Ball', 3), (u'Cap', 4)]
+        expected_order = [('Bat', 0), ('Glove', 1), ('Jersey', 2), ('Ball', 3), ('Cap', 4)]
         self.assertEqual(actual_order, expected_order)
 
         # Deleting an object should reorder both collections.
         self.cap.delete()
 
         actual_order = list(ProductCategory.objects.filter(category=self.clothes).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'T-shirt', 0), (u'Jeans', 1), (u'Jersey', 2)]
+        expected_order = [('T-shirt', 0), ('Jeans', 1), ('Jersey', 2)]
         self.assertEqual(actual_order, expected_order)
 
         actual_order = list(ProductCategory.objects.filter(category=self.sporting_goods).values_list('product__name', 'position').order_by('position'))
-        expected_order = [(u'Bat', 0), (u'Glove', 1), (u'Jersey', 2), (u'Ball', 3)]
+        expected_order = [('Bat', 0), ('Glove', 1), ('Jersey', 2), ('Ball', 3)]
         self.assertEqual(actual_order, expected_order)

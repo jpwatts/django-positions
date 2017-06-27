@@ -28,4 +28,4 @@ class ProductCategory(models.Model):
         unique_together = ('product', 'category')
 
     def __unicode__(self):
-        return u"%s in %s" % (self.product, self.category)
+        return "%s in %s" % (self.product, self.category)

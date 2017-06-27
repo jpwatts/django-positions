@@ -4,7 +4,7 @@ import unittest
 
 from django.db import models
 
-from positions.examples.school.models import SubUnit, Lesson, Exercise
+from .models import SubUnit, Lesson, Exercise
 
 
 class SchoolsTestCase(TestCase):
@@ -31,10 +31,10 @@ class SchoolsTestCase(TestCase):
         self.intro_lesson = Lesson.objects.create(sub_unit=self.american_revolution, title="The Intro", text="...", position=0)
         actual_order = list(self.american_revolution.task_set.values_list('title', 'position'))
         expected_order = [
-            (u'The Intro', 0),
-            (u'No Taxation without Representation', 1),
-            (u'Paper', 2),
-            (u'Boston Tea Party', 3),
-            (u'Pop Quiz', 4)
+            ('The Intro', 0),
+            ('No Taxation without Representation', 1),
+            ('Paper', 2),
+            ('Boston Tea Party', 3),
+            ('Pop Quiz', 4)
         ]
         self.assertEqual(actual_order, expected_order)

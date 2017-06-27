@@ -2,7 +2,7 @@ import time
 import doctest
 import unittest
 
-from positions.examples.lists.models import List, Item
+from .models import List, Item
 
 from django.test import TestCase
 
@@ -25,7 +25,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position'))
-        expected_result = [(u'Write Tests', 0)]
+        expected_result = [('Write Tests', 0)]
         self.assertEqual(result, expected_result)
 
         result = self.l.items.create(name='Exercise').name
@@ -33,7 +33,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Write Tests', 0), (u'Exercise', 1)]
+        expected_result = [('Write Tests', 0), ('Exercise', 1)]
         self.assertEqual(result, expected_result)
 
         # create an item with an explicit position
@@ -42,7 +42,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Learn to spell Exercise', 0), (u'Write Tests', 1), (u'Exercise', 2)]
+        expected_result = [('Learn to spell Exercise', 0), ('Write Tests', 1), ('Exercise', 2)]
         self.assertEqual(result, expected_result)
 
         # save an item without changing it's position
@@ -51,7 +51,7 @@ class GenericTestCase(TestCase):
         self.exercise.save()
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Learn to spell Exercise', 0), (u'Write Tests', 1), (u'Exercise', 2)]
+        expected_result = [('Learn to spell Exercise', 0), ('Write Tests', 1), ('Exercise', 2)]
         self.assertEqual(result, expected_result)
 
         # delete an item
@@ -59,7 +59,7 @@ class GenericTestCase(TestCase):
         self.learn_to_spell.delete()
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Write Tests', 0), (u'Exercise', 1)]
+        expected_result = [('Write Tests', 0), ('Exercise', 1)]
         self.assertEqual(result, expected_result)
 
         # create a couple more items
@@ -72,7 +72,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Write Tests', 0), (u'Exercise', 1), (u'Drink less Coke', 2), (u'Go to Bed', 3)]
+        expected_result = [('Write Tests', 0), ('Exercise', 1), ('Drink less Coke', 2), ('Go to Bed', 3)]
         self.assertEqual(result, expected_result)
 
         # move item to end using None
@@ -80,14 +80,14 @@ class GenericTestCase(TestCase):
         self.write_tests.position = None
         self.write_tests.save()
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Exercise', 0), (u'Drink less Coke', 1), (u'Go to Bed', 2), (u'Write Tests', 3)]
+        expected_result = [('Exercise', 0), ('Drink less Coke', 1), ('Go to Bed', 2), ('Write Tests', 3)]
         self.assertEqual(result, expected_result)
 
         # move item using negative index
         self.write_tests.position = -3
         self.write_tests.save()
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Exercise', 0), (u'Write Tests', 1), (u'Drink less Coke', 2), (u'Go to Bed', 3)]
+        expected_result = [('Exercise', 0), ('Write Tests', 1), ('Drink less Coke', 2), ('Go to Bed', 3)]
         self.assertEqual(result, expected_result)
 
         # move item to position
@@ -95,7 +95,7 @@ class GenericTestCase(TestCase):
         self.write_tests.save()
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Exercise', 0), (u'Drink less Coke', 1), (u'Write Tests', 2), (u'Go to Bed', 3)]
+        expected_result = [('Exercise', 0), ('Drink less Coke', 1), ('Write Tests', 2), ('Go to Bed', 3)]
         self.assertEqual(result, expected_result)
 
         # move item to beginning
@@ -104,16 +104,17 @@ class GenericTestCase(TestCase):
         self.sleep.save()
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Go to Bed', 0), (u'Exercise', 1), (u'Drink less Coke', 2), (u'Write Tests', 3)]
+        expected_result = [('Go to Bed', 0), ('Exercise', 1), ('Drink less Coke', 2), ('Write Tests', 3)]
         self.assertEqual(result, expected_result)
 
         # check auto_now updates
         time.sleep(1)  # sleep to guarantee updated time increases
-        sleep_updated, exercise_updated, eat_better_updated, write_tests_updated = [i.updated for i in self.l.items.order_by('position')]
-        self.eat_better = self.l.items.order_by('-position')[1]
+        sleep_updated, exercise_updated, eat_better_updated, write_tests_updated = [i.updated for i in self.l.items.all().order_by('position')]
+        self.eat_better = self.l.items.all().order_by('-position')[1]
         self.eat_better.position = 1
         self.eat_better.save()
-        self.todo_list = list(self.l.items.order_by('position'))
+        time.sleep(1)  # sleep to guarantee updated time increases
+        self.todo_list=list(self.l.items.all().order_by('position'))
 
         result = sleep_updated == self.todo_list[0].updated
         expected_result = True
@@ -134,7 +135,7 @@ class GenericTestCase(TestCase):
         # create an item using negative index
         # http://github.com/jpwatts/django-positions/issues/#issue/5
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Write Tests', 3)]
+        expected_result = [('Go to Bed', 0), ('Drink less Coke', 1), ('Exercise', 2), ('Write Tests', 3)]
         self.assertEqual(result, expected_result)
 
         self.fix_issue_5 = Item(list=self.l, name="Fix Issue #5")
@@ -153,7 +154,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Fix Issue #5', 3), (u'Write Tests', 4)]
+        expected_result = [('Go to Bed', 0), ('Drink less Coke', 1), ('Exercise', 2), ('Fix Issue #5', 3), ('Write Tests', 4)]
         self.assertEqual(result, expected_result)
 
         # Try again, now that the model has been saved.
@@ -164,7 +165,7 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Go to Bed', 0), (u'Drink less Coke', 1), (u'Exercise', 2), (u'Fix Issue #5', 3), (u'Write Tests', 4)]
+        expected_result = [('Go to Bed', 0), ('Drink less Coke', 1), ('Exercise', 2), ('Fix Issue #5', 3), ('Write Tests', 4)]
         self.assertEqual(result, expected_result)
 
         # create an item using with a position of zero
@@ -175,5 +176,5 @@ class GenericTestCase(TestCase):
         self.assertEqual(result, expected_result)
 
         result = list(self.l.items.values_list('name', 'position').order_by('position'))
-        expected_result = [(u'Fix Issue #7', 0), (u'Go to Bed', 1), (u'Drink less Coke', 2), (u'Exercise', 3), (u'Fix Issue #5', 4), (u'Write Tests', 5)]
+        expected_result = [('Fix Issue #7', 0), ('Go to Bed', 1), ('Drink less Coke', 2), ('Exercise', 3), ('Fix Issue #5', 4), ('Write Tests', 5)]
         self.assertEqual(result, expected_result)
