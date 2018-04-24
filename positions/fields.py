@@ -43,7 +43,9 @@ class PositionField(models.IntegerField):
         if isinstance(collection, basestring):
             collection = (collection,)
         self.collection = collection
-        self._next_sibling_pk_label = '_next_sibling_pk_' + '_'.join(self.collection)
+        self._next_sibling_pk_label = '_next_sibling_pk'
+        if collection is not None:
+            self._next_sibling_pk_label += '_' + '_'.join(self.collection)
         self.parent_link = parent_link
         self._collection_changed =  None
 
