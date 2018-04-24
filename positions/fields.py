@@ -199,13 +199,13 @@ class PositionField(models.IntegerField):
     def prepare_delete(self, sender, instance, **kwargs):
         next_sibling = self.get_next_sibling(instance)
         if next_sibling:
-            setattr(instance, '_next_sibling_pk', next_sibling.pk)
+            setattr(instance, '_next_sibling_pk' + self.collection[0], next_sibling.pk)
         else:
-            setattr(instance, '_next_sibling_pk', None)
+            setattr(instance, '_next_sibling_pk' + self.collection[0], None)
         pass
 
     def update_on_delete(self, sender, instance, **kwargs):
-        next_sibling_pk = getattr(instance, '_next_sibling_pk', None)
+        next_sibling_pk = getattr(instance, '_next_sibling_pk' + self.collection[0], None)
         if next_sibling_pk:
             try:
                 next_sibling = type(instance)._default_manager.get(pk=next_sibling_pk)
@@ -220,7 +220,7 @@ class PositionField(models.IntegerField):
                     for field in self.auto_now_fields:
                         updates[field.name] = right_now
                 queryset.filter(**{'%s__gt' % self.name: current}).update(**updates)
-        setattr(instance, '_next_sibling_pk', None)
+        setattr(instance, '_next_sibling_pk' + self.collection[0], None)
 
     def update_on_save(self, sender, instance, created, **kwargs):
         collection_changed = self._collection_changed
