@@ -3,29 +3,28 @@ language: python
 addons:
   postgresql: "9.3"
 
-python:
-  - 2.7
-  - 3.6
-
-env:
-  - DJANGO_VERSION=2.0.4 DB=postgres
-  - DJANGO_VERSION=2.0.4 DB=sqlite
-  - DJANGO_VERSION=2.0.4 DB=mysql
-  - DJANGO_VERSION=1.7.4 DB=postgres
-  - DJANGO_VERSION=1.7.4 DB=sqlite
-  - DJANGO_VERSION=1.7.4 DB=mysql
-  - DJANGO_VERSION=1.6.10 DB=postgres
-  - DJANGO_VERSION=1.6.10 DB=sqlite
-  - DJANGO_VERSION=1.6.10 DB=mysql
-
 matrix:
-  exclude:
+  include:
   - python: 2.7
+    env: DJANGO_VERSION=1.7.11 DB=postgres
+  - python: 2.7
+    env: DJANGO_VERSION=1.7.11 DB=sqlite
+  - python: 2.7
+    env: DJANGO_VERSION=1.7.11 DB=mysql
+
+  - python: 2.7
+    env: DJANGO_VERSION=1.6.11 DB=postgres
+  - python: 2.7
+    env: DJANGO_VERSION=1.6.11 DB=sqlite
+  - python: 2.7
+    env: DJANGO_VERSION=1.6.11 DB=mysql
+
+  - python: 3.6
     env: DJANGO_VERSION=2.0.4 DB=postgres
-  - python: 2.7
-    env: DJANGO_VERSION=2.0.4 DB=sqlite
-  - python: 2.7
+  - python: 3.6
     env: DJANGO_VERSION=2.0.4 DB=mysql
+  - python: 3.6
+    env: DJANGO_VERSION=2.0.4 DB=sqlite
 
 # command to install dependencies
 install:
