@@ -4,19 +4,19 @@ addons:
   postgresql: "9.3"
 
 python:
-  - "2.7"
-  - "3.6"
+  - 2.7
+  - 3.6
 
 env:
-  - "DJANGO_VERSION=2.0.4 DB=postgres"
-  - "DJANGO_VERSION=2.0.4 DB=sqlite"
-  - "DJANGO_VERSION=2.0.4 DB=mysql"
-  - "DJANGO_VERSION=1.7.4 DB=postgres"
-  - "DJANGO_VERSION=1.7.4 DB=sqlite"
-  - "DJANGO_VERSION=1.7.4 DB=mysql"
-  - "DJANGO_VERSION=1.6.10 DB=postgres"
-  - "DJANGO_VERSION=1.6.10 DB=sqlite"
-  - "DJANGO_VERSION=1.6.10 DB=mysql"
+  - DJANGO_VERSION=2.0.4 DB=postgres
+  - DJANGO_VERSION=2.0.4 DB=sqlite
+  - DJANGO_VERSION=2.0.4 DB=mysql
+  - DJANGO_VERSION=1.7.4 DB=postgres
+  - DJANGO_VERSION=1.7.4 DB=sqlite
+  - DJANGO_VERSION=1.7.4 DB=mysql
+  - DJANGO_VERSION=1.6.10 DB=postgres
+  - DJANGO_VERSION=1.6.10 DB=sqlite
+  - DJANGO_VERSION=1.6.10 DB=mysql
 
 matrix:
   exclude:
