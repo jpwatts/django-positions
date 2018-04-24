@@ -6,11 +6,11 @@ addons:
 matrix:
   include:
   - python: 2.7
-    env: DJANGO_VERSION=1.11.13 DB=postgres
+    env: DJANGO_VERSION=1.11.12 DB=postgres
   - python: 2.7
-    env: DJANGO_VERSION=1.11.13 DB=sqlite
+    env: DJANGO_VERSION=1.11.12 DB=sqlite
   - python: 2.7
-    env: DJANGO_VERSION=1.11.13 DB=mysql
+    env: DJANGO_VERSION=1.11.12 DB=mysql
 
   - python: 2.7
     env: DJANGO_VERSION=1.7.11 DB=postgres
@@ -34,11 +34,11 @@ matrix:
     env: DJANGO_VERSION=2.0.4 DB=sqlite
 
   - python: 3.6
-    env: DJANGO_VERSION=1.11.13 DB=postgres
+    env: DJANGO_VERSION=1.11.12 DB=postgres
   - python: 3.6
-    env: DJANGO_VERSION=1.11.13 DB=sqlite
+    env: DJANGO_VERSION=1.11.12 DB=sqlite
   - python: 3.6
-    env: DJANGO_VERSION=1.11.13 DB=mysql
+    env: DJANGO_VERSION=1.11.12 DB=mysql
 
 # command to install dependencies
 install:
