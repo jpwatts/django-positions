@@ -11,7 +11,7 @@ class Task(models.Model):
     """
     Base class for lessons/exercises - ordered items within a sub-unit
     """
-    sub_unit = models.ForeignKey(SubUnit)
+    sub_unit = models.ForeignKey(SubUnit, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     position = PositionField(collection='sub_unit', parent_link='task_ptr')
 
