@@ -115,21 +115,11 @@ class GenericTestCase(TestCase):
         self.eat_better.save()
         self.todo_list = list(self.l.items.order_by('position'))
 
-        result = sleep_updated == self.todo_list[0].updated
-        expected_result = True
-        self.assertEqual(result, expected_result)
+        self.assertEqual(sleep_updated, self.todo_list[0].updated)
 
-        result = eat_better_updated < self.todo_list[1].updated
-        expected_result = True
-        self.assertEqual(result, expected_result)
+        self.assertLessEqual(eat_better_updated, self.todo_list[1].updated)
 
-        result = exercise_updated < self.todo_list[2].updated
-        expected_result = True
-        self.assertEqual(result, expected_result)
-
-        result = write_tests_updated == exercise_updated
-        expected_result = True
-        self.assertEqual(result, expected_result)
+        self.assertLessEqual(exercise_updated, self.todo_list[2].updated)
 
         # create an item using negative index
         # http://github.com/jpwatts/django-positions/issues/#issue/5
