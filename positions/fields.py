@@ -263,3 +263,9 @@ class PositionField(models.IntegerField):
         field_class = "django.db.models.fields.IntegerField"
         args, kwargs = introspector(self)
         return (field_class, args, kwargs)
+
+    def get_cache_name(self):
+        try:
+            return super(PositionField, self).get_cache_name()
+        except AttributeError:
+            return '_%s_cache_' % self.name
