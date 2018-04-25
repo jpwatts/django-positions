@@ -1,5 +1,5 @@
 from django.test import TestCase
-from positions.examples.nodes.models import Node
+from examples.nodes.models import Node
 import doctest
 import os
 import unittest

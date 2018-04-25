@@ -2,7 +2,7 @@ import time
 import doctest
 import unittest
 
-from positions.examples.lists.models import List, Item
+from examples.lists.models import List, Item
 
 from django.test import TestCase
 

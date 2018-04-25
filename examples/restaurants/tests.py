@@ -3,7 +3,7 @@ import unittest
 
 from django.db import models
 
-from positions.examples.restaurants.models import Menu, Food, Drink
+from examples.restaurants.models import Menu, Food, Drink
 
 from django.test import TestCase
 

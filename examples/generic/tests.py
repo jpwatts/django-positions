@@ -3,8 +3,8 @@ import unittest
 
 from django.contrib.contenttypes.models import ContentType
 
-from positions.examples.lists.models import List
-from positions.examples.generic.models import GenericThing
+from examples.lists.models import List
+from examples.generic.models import GenericThing
 
 from django.test import TestCase
 

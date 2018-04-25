@@ -2,8 +2,8 @@ from django.test import TestCase
 import doctest
 import unittest
 import pprint
-from positions.examples.photos.forms import PhotoForm
-from positions.examples.photos.models import Album, Photo
+from examples.photos.forms import PhotoForm
+from examples.photos.models import Album, Photo
 
 class PhotosTestCase(TestCase):
     def setUp(self):

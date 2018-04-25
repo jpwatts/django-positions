@@ -48,7 +48,8 @@ install:
 
 before_script:
   - psql -c 'create database django_positions;' -U postgres
-  - mysql -e 'create database django_positions;'
+  - mysql -e 'create database django_positions;'l
+  sc
 
 # command to run tests
 script: django-admin.py test --pythonpath=`pwd`  --settings positions.examples.ci_settings_$DB positions

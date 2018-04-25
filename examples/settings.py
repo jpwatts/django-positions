@@ -36,15 +36,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'positions.examples.todo',
-    'positions.examples.generic',
-    'positions.examples.lists',
-    'positions.examples.nodes',
-    'positions.examples.photos',
-    'positions.examples.restaurants',
-    'positions.examples.school',
-    'positions.examples.store',
-    'positions.examples.migration'
+    'examples.todo',
+    'examples.generic',
+    'examples.lists',
+    'examples.nodes',
+    'examples.photos',
+    'examples.restaurants',
+    'examples.school',
+    'examples.store',
+    'examples.migration'
 )
 
 MIDDLEWARE_CLASSES = (
