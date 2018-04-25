@@ -37,7 +37,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'examples.todo',
-    'examples.generic',
     'examples.lists',
     'examples.nodes',
     'examples.photos',
@@ -64,6 +63,7 @@ MIDDLEWARE_CLASSES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydb',
     }
 }
 
