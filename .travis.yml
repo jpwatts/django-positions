@@ -26,6 +26,20 @@ matrix:
   - python: 2.7
     env: DJANGO_VERSION=1.6.11 DB=mysql
 
+  - python: 3.5
+    env: DJANGO_VERSION=2.0.4 DB=postgres
+  - python: 3.5
+    env: DJANGO_VERSION=2.0.4 DB=mysql
+  - python: 3.5
+    env: DJANGO_VERSION=2.0.4 DB=sqlite
+
+  - python: 3.5
+    env: DJANGO_VERSION=1.11.12 DB=postgres
+  - python: 3.5
+    env: DJANGO_VERSION=1.11.12 DB=sqlite
+  - python: 3.5
+    env: DJANGO_VERSION=1.11.12 DB=mysql
+
   - python: 3.6
     env: DJANGO_VERSION=2.0.4 DB=postgres
   - python: 3.6
@@ -43,7 +57,7 @@ matrix:
 # command to install dependencies
 install:
   - "pip install -q Django==$DJANGO_VERSION"
-  - "if [[ $DB == mysql ]]; then pip install mysqlclient; fi"
+  - "if [[ $DB == mysql ]]; then pip install -q mysqlclient; fi"
   - "if [[ $DB == postgres ]]; then pip install -q psycopg2; fi"
 
 before_script:
