@@ -4,7 +4,7 @@ import unittest
 
 from django.db import models
 
-from positions.examples.school.models import SubUnit, Lesson, Exercise
+from examples.school.models import SubUnit, Lesson, Exercise
 
 
 class SchoolsTestCase(TestCase):
