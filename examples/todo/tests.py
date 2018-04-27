@@ -1,7 +1,7 @@
 import doctest
 import unittest
 
-from positions.examples.todo.models import Item
+from examples.todo.models import Item
 
 from django.test import TestCase
 

@@ -20,8 +20,8 @@ class Category(models.Model):
 
 
 class ProductCategory(models.Model):
-    product = models.ForeignKey(Product)
-    category = models.ForeignKey(Category)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     position = PositionField(collection='category')
 
     class Meta(object):

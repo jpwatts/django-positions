@@ -8,7 +8,7 @@ class Menu(models.Model):
 
 
 class Item(models.Model):
-    menu = models.ForeignKey(Menu)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     position = PositionField(collection='menu')
 
 

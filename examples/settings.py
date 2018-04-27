@@ -36,15 +36,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'positions.examples.todo',
-    'positions.examples.generic',
-    'positions.examples.lists',
-    'positions.examples.nodes',
-    'positions.examples.photos',
-    'positions.examples.restaurants',
-    'positions.examples.school',
-    'positions.examples.store',
-    'positions.examples.migration'
+    'examples.todo',
+    'examples.lists',
+    'examples.nodes',
+    'examples.photos',
+    'examples.restaurants',
+    'examples.school',
+    'examples.store',
+    'examples.migration'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,10 +56,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'local.urls'
-
-WSGI_APPLICATION = 'local.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -68,6 +63,7 @@ WSGI_APPLICATION = 'local.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydb',
     }
 }
 

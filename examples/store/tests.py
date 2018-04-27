@@ -4,7 +4,7 @@ import unittest
 from django.db import models
 
 from positions import PositionField
-from positions.examples.store.models import Product, Category, ProductCategory
+from examples.store.models import Product, Category, ProductCategory
 
 from django.test import TestCase
 

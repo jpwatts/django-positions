@@ -11,7 +11,7 @@ class Album(models.Model):
 
 
 class Photo(models.Model):
-    album = models.ForeignKey(Album, related_name='photos')
+    album = models.ForeignKey(Album, related_name='photos', on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     position = PositionField(collection='album', default=0)
 
