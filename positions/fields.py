@@ -141,13 +141,13 @@ class PositionField(models.IntegerField):
 
     def __get__(self, instance, owner):
         if instance is None:
-            raise AttributeError("%s must be accessed via instance." % self.name)
+            return self
         current, updated = getattr(instance, self.get_cache_name())
         return current if updated is None else updated
 
     def __set__(self, instance, value):
         if instance is None:
-            raise AttributeError("%s must be accessed via instance." % self.name)
+            return self
         if value is None:
             value = self.default
         cache_name = self.get_cache_name()

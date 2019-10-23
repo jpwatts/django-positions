@@ -4,3 +4,4 @@
 *.un~
 /build
 /dist
+venv

@@ -1,2 +1,2 @@
-Django==1.7.4
-psycopg2==2.6
+Django==2.2.2
+psycopg2-binary==2.7.7
