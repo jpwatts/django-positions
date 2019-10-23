@@ -1,7 +1,8 @@
 language: python
 
-addons:
-  postgresql: "9.3"
+services:
+  - postgresql
+  - mysql
 
 matrix:
   include:
@@ -72,7 +73,7 @@ matrix:
 install:
   - "pip install -q Django==$DJANGO_VERSION"
   - "if [[ $DB == mysql ]]; then pip install -q mysqlclient; fi"
-  - "if [[ $DB == postgres ]]; then pip install -q psycopg2; fi"
+  - "if [[ $DB == postgres ]]; then pip install -q psycopg2-binary; fi"
 
 before_script:
   - psql -c 'create database django_positions;' -U postgres
