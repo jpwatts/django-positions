@@ -6,11 +6,11 @@ addons:
 matrix:
   include:
   - python: 2.7
-    env: DJANGO_VERSION=1.11.12 DB=postgres
+    env: DJANGO_VERSION=1.11.25 DB=postgres
   - python: 2.7
-    env: DJANGO_VERSION=1.11.12 DB=sqlite
+    env: DJANGO_VERSION=1.11.25 DB=sqlite
   - python: 2.7
-    env: DJANGO_VERSION=1.11.12 DB=mysql
+    env: DJANGO_VERSION=1.11.25 DB=mysql
 
   - python: 2.7
     env: DJANGO_VERSION=1.7.11 DB=postgres
@@ -27,11 +27,18 @@ matrix:
     env: DJANGO_VERSION=1.6.11 DB=mysql
 
   - python: 3.5
-    env: DJANGO_VERSION=2.0.4 DB=postgres
+    env: DJANGO_VERSION=2.0.13 DB=postgres
   - python: 3.5
-    env: DJANGO_VERSION=2.0.4 DB=mysql
+    env: DJANGO_VERSION=2.0.13 DB=mysql
   - python: 3.5
-    env: DJANGO_VERSION=2.0.4 DB=sqlite
+    env: DJANGO_VERSION=2.0.13 DB=sqlite
+
+  - python: 3.5
+    env: DJANGO_VERSION=2.2.6 DB=postgres
+  - python: 3.5
+    env: DJANGO_VERSION=2.2.6 DB=mysql
+  - python: 3.5
+    env: DJANGO_VERSION=2.2.6 DB=sqlite
 
   - python: 3.5
     env: DJANGO_VERSION=1.11.12 DB=postgres
@@ -41,18 +48,25 @@ matrix:
     env: DJANGO_VERSION=1.11.12 DB=mysql
 
   - python: 3.6
-    env: DJANGO_VERSION=2.0.4 DB=postgres
+    env: DJANGO_VERSION=2.0.13 DB=postgres
   - python: 3.6
-    env: DJANGO_VERSION=2.0.4 DB=mysql
+    env: DJANGO_VERSION=2.0.13 DB=mysql
   - python: 3.6
-    env: DJANGO_VERSION=2.0.4 DB=sqlite
+    env: DJANGO_VERSION=2.0.13 DB=sqlite
 
   - python: 3.6
-    env: DJANGO_VERSION=1.11.12 DB=postgres
+    env: DJANGO_VERSION=2.2.6 DB=postgres
   - python: 3.6
-    env: DJANGO_VERSION=1.11.12 DB=sqlite
+    env: DJANGO_VERSION=2.2.6 DB=mysql
   - python: 3.6
-    env: DJANGO_VERSION=1.11.12 DB=mysql
+    env: DJANGO_VERSION=2.2.6 DB=sqlite
+
+  - python: 3.6
+    env: DJANGO_VERSION=1.11.25 DB=postgres
+  - python: 3.6
+    env: DJANGO_VERSION=1.11.25 DB=sqlite
+  - python: 3.6
+    env: DJANGO_VERSION=1.11.25 DB=mysql
 
 # command to install dependencies
 install:
@@ -65,4 +79,4 @@ before_script:
   - mysql -e 'create database django_positions;'
 
 # command to run tests
-script: python manage.py test --settings examples.ci_settings_$DB examples
+script: python manage.py test --settings examples.ci_settings examples
